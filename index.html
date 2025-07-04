@@ -604,9 +604,11 @@
                 justify-content: flex-start;
                 align-items: center;
                 gap: 2rem;
-                padding-top: 3rem;
+                padding: 3rem 1rem 2rem 1rem; /* Add horizontal padding */
                 transition: left 0.3s ease;
                 z-index: 999;
+                box-sizing: border-box; /* Ensure padding is included in width */
+                overflow-y: auto; /* Allow scrolling if content is too tall */
             }
 
             .nav-menu.active {
@@ -616,6 +618,7 @@
             .nav-menu li {
                 width: 100%;
                 text-align: center;
+                max-width: 300px; /* Prevent items from being too wide */
             }
 
             .nav-menu a {
@@ -623,12 +626,16 @@
                 padding: 1rem;
                 font-size: 1.2rem;
                 width: 100%;
+                box-sizing: border-box;
             }
 
             .resume-btn {
-                margin: 1rem 2rem;
-                display: inline-block;
-                width: auto;
+                margin: 0.5rem auto; /* Center the button with minimal margin */
+                display: block !important; /* Force block display */
+                width: 150px; /* Fixed width to prevent overflow */
+                max-width: 90%; /* Ensure it doesn't exceed container */
+                text-align: center;
+                box-sizing: border-box;
             }
 
             .hero h1 {
@@ -726,6 +733,17 @@
             min-height: 2rem;
         }
 
+        .mobile-instructions {
+            background-color: rgba(0, 123, 255, 0.1);
+            border: 1px solid #007bff;
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #007bff;
+            text-align: center;
+        }
+
         .board-wrapper {
             width: 100%;
             max-width: 500px;
@@ -733,6 +751,48 @@
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            /* Prevent touch scrolling on the chess board */
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Prevent scrolling on chess pieces */
+        .board-wrapper img {
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            pointer-events: auto;
+        }
+
+        /* Ensure chess board squares are touch-friendly */
+        .board-wrapper .square-55d63 {
+            touch-action: none;
+        }
+
+        /* Highlighted square for mobile tap-to-move */
+        .board-wrapper .highlight-white {
+            background-color: rgba(255, 255, 0, 0.5) !important;
+            box-shadow: inset 0 0 0 3px #ffff00 !important;
+        }
+
+        /* Mobile chess board improvements */
+        @media (max-width: 768px) {
+            .board-wrapper .square-55d63 {
+                min-height: 40px;
+                min-width: 40px;
+            }
+            
+            .board-wrapper img {
+                max-width: 90%;
+                max-height: 90%;
+            }
         }
 
         .captured-pieces-container {
@@ -1171,6 +1231,11 @@
             <div class="chess-container">
                 <div class="chess-game-wrapper">
                     <div id="game-status" class="game-status">White's Turn</div>
+                    
+                    <!-- Mobile instructions -->
+                    <div id="mobile-instructions" class="mobile-instructions" style="display: none;">
+                        📱 <strong>Mobile:</strong> Tap a piece to select it, then tap the destination square to move.
+                    </div>
 
                     <div id="black-captured" class="captured-pieces-container"></div>
                     <div class="board-wrapper">
@@ -1590,12 +1655,100 @@
                 onDrop: onDrop,
                 onSnapEnd: onSnapEnd,
                 pieceTheme: pieceTheme,
-                touchMove: true // Enable touch support for mobile devices
+                touchMove: true, // Enable touch support for mobile devices
+                snapbackSpeed: 500,
+                snapSpeed: 100,
+                trashSpeed: 100,
+                sparePieces: false,
+                showNotation: true,
+                moveSpeed: 200
             };
 
             // --- Initialization ---
             board = Chessboard('chessBoard', config);
             updateStatus();
+
+            // Show mobile instructions if on mobile device
+            if (isMobile) {
+                document.getElementById('mobile-instructions').style.display = 'block';
+            }
+
+            // --- Additional Mobile Touch Support ---
+            // Add custom touch event handlers for better mobile experience
+            let selectedSquare = null;
+            let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            // Alternative tap-to-move system for mobile
+            function onSquareClick(square) {
+                // Only use tap-to-move on mobile devices
+                if (!isMobile) return;
+                
+                if (selectedSquare === null) {
+                    // First tap - select piece
+                    const piece = board.position()[square];
+                    if (piece && piece.charAt(0) === 'w' && game.turn() === 'w' && !game.game_over()) {
+                        selectedSquare = square;
+                        $('#chessBoard .square-' + square).addClass('highlight-white');
+                        statusEl.html('Piece selected. Tap destination square.');
+                    }
+                } else {
+                    // Second tap - move piece
+                    const move = game.move({ from: selectedSquare, to: square, promotion: 'q' });
+                    if (move === null) {
+                        // Invalid move - clear selection
+                        $('#chessBoard .square-55d63').removeClass('highlight-white');
+                        selectedSquare = null;
+                        updateStatus();
+                    } else {
+                        // Valid move - update board and clear selection
+                        board.position(game.fen());
+                        $('#chessBoard .square-55d63').removeClass('highlight-white');
+                        selectedSquare = null;
+                        updateStatus();
+                        window.setTimeout(makeBotMove, 250);
+                    }
+                }
+            }
+
+            setTimeout(() => {
+                const boardElement = document.getElementById('chessBoard');
+                if (boardElement) {
+                    // Prevent default touch behaviors that might interfere
+                    boardElement.addEventListener('touchstart', function(e) {
+                        e.stopPropagation();
+                    }, { passive: false });
+                    
+                    boardElement.addEventListener('touchmove', function(e) {
+                        e.stopPropagation();
+                    }, { passive: false });
+                    
+                    boardElement.addEventListener('touchend', function(e) {
+                        e.stopPropagation();
+                    }, { passive: false });
+
+                    // Force enable drag and drop for mobile
+                    const pieces = boardElement.querySelectorAll('img');
+                    pieces.forEach(piece => {
+                        piece.style.touchAction = 'none';
+                        piece.style.webkitUserDrag = 'element';
+                        piece.draggable = true;
+                    });
+
+                    // Add click handlers for tap-to-move on mobile
+                    if (isMobile) {
+                        const squares = boardElement.querySelectorAll('.square-55d63');
+                        squares.forEach(square => {
+                            square.addEventListener('click', function() {
+                                const squareId = this.getAttribute('data-square') || 
+                                               this.className.match(/square-([a-h][1-8])/)?.[1];
+                                if (squareId) {
+                                    onSquareClick(squareId);
+                                }
+                            });
+                        });
+                    }
+                }
+            }, 1000);
 
             // --- Event Handlers ---
             $('#restart-button').on('click', () => {
@@ -1648,6 +1801,18 @@
             document.addEventListener('click', function(event) {
                 if (!navMenu.contains(event.target) && !mobileToggle.contains(event.target)) {
                     navMenu.classList.remove('active');
+                }
+            });
+
+            // Close mobile menu when scrolling (prevents resume button staying visible)
+            let isScrolling = false;
+            window.addEventListener('scroll', function() {
+                if (!isScrolling) {
+                    window.requestAnimationFrame(function() {
+                        navMenu.classList.remove('active');
+                        isScrolling = false;
+                    });
+                    isScrolling = true;
                 }
             });
         });
