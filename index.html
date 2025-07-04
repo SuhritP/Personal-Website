@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suhrit Padakanti</title>
+    
+    <!-- Chess Game Libraries -->
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            color: #007bff;
+        }
+
+        .resume-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            color: #007bff !important;
+            transition: all 0.3s ease;
+        }
+
+        .resume-btn:hover {
+            background-color: #007bff;
+            color: #fff !important;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+            position: relative;
+            overflow: hidden;
+            background-color: #02001a; /* Dark navy blue background */
+        }
+
+        /* Neural Network Canvas */
+        #neuralNetworkCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Remove old animation styles */
+        .hero::before,
+        .hero::after {
+            display: none;
+        }
+
+        .hero-content {
+            max-width: 600px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            color: #ffffff; /* White text for dark background */
+        }
+
+        .hero h2 {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: #ccddff; /* Light blue text for dark background */
+            font-weight: 400;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .social-links a:hover {
+            transform: translateY(-3px);
+        }
+
+        .social-links img {
+            width: 24px;
+            height: 24px;
+            filter: brightness(0) invert(1);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Section Styling */
+        section {
+            padding: 5rem 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background-color: #007bff;
+        }
+
+        /* About Section */
+        .about {
+            background-color: #f8f9fa;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .about-image {
+            width: 100%;
+            height: 300px;
+            background-color: #ddd;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .about-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .education-info {
+            background-color: #e9f4ff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+            border-left: 4px solid #007bff;
+        }
+
+        .education-info h4 {
+            color: #007bff;
+            margin-bottom: 0.5rem;
+        }
+
+        .education-info p {
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+
+        /* Experience Section */
+        .experience {
+            background-color: #fff;
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #007bff;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 80px;
+            margin-bottom: 3rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 24px;
+            top: 5px;
+            width: 14px;
+            height: 14px;
+            background-color: #007bff;
+            border-radius: 50%;
+        }
+
+        .timeline-date {
+            background-color: #007bff;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .timeline-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .timeline-company {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        /* Skills Section */
+        .skills {
+            background-color: #f8f9fa;
+        }
+
+        .skills-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .skill-section {
+            margin-bottom: 4rem;
+        }
+
+        .skill-section h4 {
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            color: #333;
+            text-align: center;
+            position: relative;
+        }
+
+        .skill-section h4::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background-color: #007bff;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 2rem;
+            justify-items: center;
+        }
+
+        .skill-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 100%;
+            max-width: 140px;
+        }
+
+        .skill-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .skill-icon {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .skill-icon img {
+            width: 35px;
+            height: 35px;
+            object-fit: contain;
+        }
+
+        .skill-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        /* Technology-specific colors */
+        .skill-item[data-tech="python"] .skill-icon { background-color: #f8f9fa; }
+        .skill-item[data-tech="javascript"] .skill-icon { background-color: #f8f9fa; }
+        .skill-item[data-tech="typescript"] .skill-icon { background-color: #f8f9fa; }
+        .skill-item[data-tech="java"] .skill-icon { background-color: #f8f9fa; }
+        .skill-item[data-tech="swift"] .skill-icon { background-color: #f8f9fa; }
+        .skill-item[data-tech="cpp"] .skill-icon { background-color: #f8f9fa; }
+        .skill-item[data-tech="sql"] .skill-icon { background-color: #f8f9fa; }
+        .skill-item[data-tech="html"] .skill-icon { background-color: #f8f9fa; }
+        .skill-item[data-tech="react"] .skill-icon { background-color: #f8f9fa; }
+        .skill-item[data-tech="node"] .skill-icon { background-color: #f8f9fa; }
+        .skill-item[data-tech="aws"] .skill-icon { background-color: #f8f9fa; }
+        .skill-item[data-tech="docker"] .skill-icon { background-color: #f8f9fa; }
+        .skill-item[data-tech="tensorflow"] .skill-icon { background-color: #f8f9fa; }
+        .skill-item[data-tech="pytorch"] .skill-icon { background-color: #f8f9fa; }
+        .skill-item[data-tech="mongodb"] .skill-icon { background-color: #f8f9fa; }
+        .skill-item[data-tech="mysql"] .skill-icon { background-color: #f8f9fa; }
+        .skill-item[data-tech="git"] .skill-icon { background-color: #f8f9fa; }
+
+        /* Remove old skill category styles */
+        .skill-category {
+            display: none;
+        }
+
+        /* Projects Section */
+        .projects {
+            background-color: #fff;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .project-content {
+            padding: 1.5rem;
+        }
+
+        .project-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .project-description {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tech-tag {
+            background-color: #e9ecef;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            color: #495057;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .project-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .project-btn.secondary {
+            background-color: transparent;
+            color: #007bff;
+        }
+
+        .project-btn.secondary:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        /* Contact Section */
+        .contact {
+            background-color: #f8f9fa;
+        }
+
+        .contact-content {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .contact-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 2rem;
+        }
+
+        .contact-btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .contact-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .footer-content {
+            margin-bottom: 2rem;
+        }
+
+        .footer-social {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .footer-social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            transform: translateY(-3px);
+        }
+
+        .footer-social img {
+            width: 20px;
+            height: 20px;
+            filter: brightness(0) invert(1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                gap: 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero h2 {
+                font-size: 1.2rem;
+            }
+
+            /* Optimize neural network animation for mobile */
+            #neuralNetworkCanvas {
+                opacity: 0.7; /* Reduce intensity on mobile */
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .timeline {
+                padding-left: 0;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item {
+                padding-left: 60px;
+            }
+
+            .timeline-item::before {
+                left: 14px;
+            }
+
+            .skills-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .skill-item {
+                padding: 1rem;
+                max-width: 120px;
+            }
+
+            .skill-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .skill-name {
+                font-size: 0.8rem;
+            }
+
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .project-links {
+                flex-direction: column;
+            }
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Chess Game Section */
+        .chess {
+            background-color: #fff;
+        }
+
+        .chess-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .chess-game-wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-status {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+            min-height: 2rem;
+        }
+
+        .board-wrapper {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .captured-pieces-container {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            margin: 1rem auto;
+            min-height: 50px;
+            padding: 0 10px;
+            background-color: rgba(0, 123, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        .captured-pieces-container img {
+            width: 35px;
+            height: 35px;
+            opacity: 0.8;
+        }
+
+        .chess-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .chess-btn {
+            padding: 0.75rem 1.5rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .chess-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .chess-btn.secondary {
+            background-color: #6c757d;
+        }
+
+        .chess-btn.secondary:hover {
+            background-color: #545b62;
+        }
+
+        .pgn-container {
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .pgn-container textarea {
+            width: 100%;
+            height: 120px;
+            background-color: #ffffff;
+            color: #333;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+        }
+
+        .pgn-container h4 {
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        /* Mobile Chess Responsive */
+        @media (max-width: 768px) {
+            .chess-game-wrapper {
+                padding: 1rem;
+                margin: 0 1rem;
+            }
+
+            .board-wrapper {
+                max-width: 90vw;
+            }
+
+            .captured-pieces-container {
+                height: 40px;
+                min-height: 40px;
+            }
+
+            .captured-pieces-container img {
+                width: 28px;
+                height: 28px;
+            }
+
+            .chess-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .chess-btn {
+                width: 200px;
+            }
+
+            .game-status {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="nav-container">
+                <a href="#" class="logo">Suhrit Padakanti</a>
+                <ul class="nav-menu">
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#experience">Experience</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="resume.pdf" class="resume-btn" target="_blank">Resume</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <canvas id="neuralNetworkCanvas"></canvas>
+        <div class="container">
+            <div class="hero-content">
+                <h1>Suhrit Padakanti</h1>
+                <h2>Computer Science Student & Software Engineer. Building scalable solutions with cloud infrastructure and AI.</h2>
+                
+                <div class="social-links">
+                    <a href="https://linkedin.com/in/suhrit-padakanti" target="_blank" title="LinkedIn">
+                        <img src="linkedin-icon.svg" alt="LinkedIn">
+                    </a>
+                    <a href="https://github.com/SuhritP" target="_blank" title="GitHub">
+                        <img src="github-icon.svg" alt="GitHub">
+                    </a>
+                </div>
+                
+                <a href="#projects" class="cta-button">View My Work</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h3 class="section-title">About Me</h3>
+            <div class="about-content">
+                <div class="about-image">
+                    <img src="Professional Headshot.jpg" alt="Professional headshot of Suhrit" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                </div>
+                <div class="about-text">
+                    <p>Hello! I'm Suhrit, a passionate Computer Science student at UC Santa Barbara with a strong foundation in software engineering, cloud infrastructure, and AI research. My journey spans from building scalable web applications to developing cutting-edge solutions in vulnerability detection and fMRI image reconstruction.</p>
+                    
+                    <p>I thrive in challenging environments where I can apply my technical expertise to solve complex problems. Whether it's architecting cloud solutions, developing machine learning models, or building full-stack applications, I'm driven by the opportunity to create impactful technology that makes a difference.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="experience">
+        <div class="container">
+            <h3 class="section-title">Work Experience</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">Apr 2025 - Present</div>
+                    <div class="timeline-title">Cloud Solutions Architect Intern</div>
+                    <div class="timeline-company">UCSB ITS</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">Sep 2024 - Apr 2025</div>
+                    <div class="timeline-title">AI Research Assistant</div>
+                    <div class="timeline-company">DYNAMO Lab, UC Santa Barbara</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">Sep 2023 - Jun 2024</div>
+                    <div class="timeline-title">Security and Program Analysis Researcher</div>
+                    <div class="timeline-company">Computer Verification Lab, UC Santa Barbara</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">Jun 2023 - Sep 2023</div>
+                    <div class="timeline-title">Software Engineer Intern</div>
+                    <div class="timeline-company">Makonis</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="skills">
+        <div class="container">
+            <h3 class="section-title">Technical Skills</h3>
+            <div class="skills-container">
+                <div class="skill-section">
+                    <h4>Programming Languages</h4>
+                    <div class="skills-grid">
+                        <div class="skill-item" data-tech="python">
+                            <div class="skill-icon">
+                                <img src="python-icon.svg" alt="Python">
+                            </div>
+                            <span class="skill-name">Python</span>
+                        </div>
+                        <div class="skill-item" data-tech="javascript">
+                            <div class="skill-icon">
+                                <img src="javascript-icon.svg" alt="JavaScript">
+                            </div>
+                            <span class="skill-name">JavaScript</span>
+                        </div>
+                        <div class="skill-item" data-tech="typescript">
+                            <div class="skill-icon">
+                                <img src="typescript-icon.svg" alt="TypeScript">
+                            </div>
+                            <span class="skill-name">TypeScript</span>
+                        </div>
+                        <div class="skill-item" data-tech="java">
+                            <div class="skill-icon">
+                                <img src="java-icon.svg" alt="Java">
+                            </div>
+                            <span class="skill-name">Java</span>
+                        </div>
+                        <div class="skill-item" data-tech="swift">
+                            <div class="skill-icon">
+                                <img src="swift-icon.svg" alt="Swift">
+                            </div>
+                            <span class="skill-name">Swift</span>
+                        </div>
+                        <div class="skill-item" data-tech="cpp">
+                            <div class="skill-icon">
+                                <img src="cpp-icon.svg" alt="C++">
+                            </div>
+                            <span class="skill-name">C/C++</span>
+                        </div>
+                        <div class="skill-item" data-tech="sql">
+                            <div class="skill-icon">
+                                <img src="sql-icon.svg" alt="SQL">
+                            </div>
+                            <span class="skill-name">SQL</span>
+                        </div>
+                        <div class="skill-item" data-tech="html">
+                            <div class="skill-icon">
+                                <img src="html-icon.svg" alt="HTML/CSS">
+                            </div>
+                            <span class="skill-name">HTML/CSS</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="skill-section">
+                    <h4>Technologies</h4>
+                    <div class="skills-grid">
+                        <div class="skill-item" data-tech="react">
+                            <div class="skill-icon">
+                                <img src="react-icon.svg" alt="React">
+                            </div>
+                            <span class="skill-name">React</span>
+                        </div>
+                        <div class="skill-item" data-tech="node">
+                            <div class="skill-icon">
+                                <img src="nodejs-icon.svg" alt="Node.js">
+                            </div>
+                            <span class="skill-name">Node.js</span>
+                        </div>
+                        <div class="skill-item" data-tech="aws">
+                            <div class="skill-icon">
+                                <img src="aws-icon.svg" alt="AWS">
+                            </div>
+                            <span class="skill-name">AWS</span>
+                        </div>
+                        <div class="skill-item" data-tech="docker">
+                            <div class="skill-icon">
+                                <img src="docker-icon.svg" alt="Docker">
+                            </div>
+                            <span class="skill-name">Docker</span>
+                        </div>
+                        <div class="skill-item" data-tech="tensorflow">
+                            <div class="skill-icon">
+                                <img src="tensorflow-icon.svg" alt="TensorFlow">
+                            </div>
+                            <span class="skill-name">TensorFlow</span>
+                        </div>
+                        <div class="skill-item" data-tech="pytorch">
+                            <div class="skill-icon">
+                                <img src="pytorch-icon.svg" alt="PyTorch">
+                            </div>
+                            <span class="skill-name">PyTorch</span>
+                        </div>
+                        <div class="skill-item" data-tech="mongodb">
+                            <div class="skill-icon">
+                                <img src="mongodb-icon.svg" alt="MongoDB">
+                            </div>
+                            <span class="skill-name">MongoDB</span>
+                        </div>
+                        <div class="skill-item" data-tech="mysql">
+                            <div class="skill-icon">
+                                <img src="mysql-icon.svg" alt="MySQL">
+                            </div>
+                            <span class="skill-name">MySQL</span>
+                        </div>
+                        <div class="skill-item" data-tech="git">
+                            <div class="skill-icon">
+                                <img src="git-icon.svg" alt="Git">
+                            </div>
+                            <span class="skill-name">Git</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <h3 class="section-title">Featured Projects</h3>
+            <div class="project-grid">
+                <div class="project-card">
+                    <div class="project-content">
+                        <h4 class="project-title">Food for All</h4>
+                        <p class="project-description">
+                            A full-stack application connecting hotels and NGOs to reduce food waste. Launched with 100+ downloads, partnering with 7 hotels and 2 NGOs. Built with React frontend and Node.js backend, deployed on scalable AWS infrastructure.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">React</span>
+                            <span class="tech-tag">Node.js</span>
+                            <span class="tech-tag">AWS</span>
+                            <span class="tech-tag">SQL</span>
+                            <span class="tech-tag">MongoDB</span>
+                            <span class="tech-tag">Swift</span>
+                            <span class="tech-tag">Java</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/SuhritP/SBHacks" class="project-btn secondary" target="_blank">View Code</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-content">
+                        <h4 class="project-title">TrendCast</h4>
+                        <p class="project-description">
+                            A machine learning model that predicts YouTube video trends using advanced data processing and analysis. Built with Python, TensorFlow, and scikit-learn, handling complex data workflows with Pandas and NumPy.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">TensorFlow</span>
+                            <span class="tech-tag">Pandas</span>
+                            <span class="tech-tag">NumPy</span>
+                            <span class="tech-tag">Matplotlib</span>
+                            <span class="tech-tag">scikit-learn</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/SuhritP/Application" class="project-btn secondary" target="_blank">View Code</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-content">
+                        <h4 class="project-title">Custom Programming Language Compiler</h4>
+                        <p class="project-description">
+                            Designed and implemented a highly efficient compiler with custom lexer and parser. Supports dynamic variables, conditionals, loops, functions, and arrays. Built using advanced algorithms and data structures in C++.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">C++</span>
+                            <span class="tech-tag">Flex</span>
+                            <span class="tech-tag">Bison</span>
+                            <span class="tech-tag">Compiler Design</span>
+                            <span class="tech-tag">Data Structures</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/SuhritP/Compiler" class="project-btn secondary" target="_blank">View Code</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chess Section -->
+    <section id="chess" class="chess">
+        <div class="container">
+            <h3 class="section-title">Play against me!</h3>
+            <div class="chess-container">
+                <div class="chess-game-wrapper">
+                    <div id="game-status" class="game-status">White's Turn</div>
+
+                    <div id="black-captured" class="captured-pieces-container"></div>
+                    <div class="board-wrapper">
+                        <div id="chessBoard"></div>
+                    </div>
+                    <div id="white-captured" class="captured-pieces-container"></div>
+
+                    <div class="chess-buttons">
+                        <button id="restart-button" class="chess-btn">
+                            New Game
+                        </button>
+                        <button id="show-pgn" class="chess-btn secondary" style="display: none;">
+                            Show Game Notation
+                        </button>
+                    </div>
+                    
+                    <div id="pgn-container" class="pgn-container" style="display: none;">
+                        <h4>Game PGN (Portable Game Notation)</h4>
+                        <textarea id="pgn-output" readonly></textarea>
+                        <div class="chess-buttons">
+                            <button id="download-pgn" class="chess-btn">Download PGN</button>
+                            <button id="hide-pgn" class="chess-btn secondary">Hide</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h3 class="section-title">Get In Touch</h3>
+            <div class="contact-content">
+                <p class="contact-text">
+                    I'm always open to discussing new opportunities, interesting projects, or potential collaborations. Whether you have a question about my work or want to connect, feel free to reach out!
+                </p>
+                <a href="mailto:suhrit@ucsb.edu" class="contact-btn">Say Hello</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p>Designed & Built by Suhrit Padakanti</p>
+                <div class="footer-social">
+                    <a href="https://linkedin.com/in/suhrit-padakanti" target="_blank" title="LinkedIn">
+                        <img src="linkedin-icon.svg" alt="LinkedIn">
+                    </a>
+                    <a href="https://github.com/SuhritP" target="_blank" title="GitHub">
+                        <img src="github-icon.svg" alt="GitHub">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add active class to navigation items on scroll
+        window.addEventListener('scroll', () => {
+            let current = '';
+            const sections = document.querySelectorAll('section');
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Neural Network Animation
+        const canvas = document.getElementById('neuralNetworkCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // --- Configuration ---
+        const neuralConfig = {
+            neuron: {
+                radius: 4, // Slightly smaller base radius
+                color: 'rgba(100, 180, 255, 0.6)',
+                glow: 'rgba(100, 180, 255, 0.2)',
+                fireColor: '#ffffff',
+                fireGlow: '#99ccff'
+            },
+            line: {
+                color: 'rgba(100, 180, 255, 0.15)', // More subtle lines
+                width: 0.5
+            },
+            pulse: {
+                radius: 2.5,
+                color: '#ccddff',
+                speed: 0.025
+            },
+            mouse: {
+                radius: 150 // The radius around the mouse to interact with neurons
+            },
+            layers: window.innerWidth < 768 ? [4, 5, 4, 3] : [6, 7, 7, 5, 4] // Fewer neurons on mobile
+        };
+
+        let neurons = [];
+        let pulses = [];
+        const mouse = {
+            x: undefined,
+            y: undefined
+        };
+
+        // --- Event Listeners ---
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = event.x;
+            mouse.y = event.y;
+        });
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            // Update layer configuration based on screen size
+            neuralConfig.layers = window.innerWidth < 768 ? [4, 5, 4, 3] : [6, 7, 7, 5, 4];
+            neurons = [];
+            initializeNetwork();
+        });
+
+        class Neuron {
+            constructor(x, y) {
+                this.baseX = x;
+                this.baseY = y;
+                this.x = x;
+                this.y = y;
+                this.activation = 0; // 0 = resting, 1 = firing
+                this.jiggleFactor = Math.random() * 0.02 + 0.005; // How much it moves
+            }
+
+            // New method to make the neuron jiggle
+            jiggle() {
+                // Using sine waves for smooth, organic movement
+                this.x = this.baseX + Math.sin(Date.now() * this.jiggleFactor) * 5;
+                this.y = this.baseY + Math.cos(Date.now() * this.jiggleFactor) * 5;
+            }
+
+            // New method to trigger the firing animation
+            fire() {
+                this.activation = 1;
+            }
+
+            update() {
+                this.jiggle();
+                // Decay the activation over time
+                if (this.activation > 0) {
+                    this.activation -= 0.05;
+                } else {
+                    this.activation = 0;
+                }
+            }
+
+            draw() {
+                let radius = neuralConfig.neuron.radius;
+                let color = neuralConfig.neuron.color;
+                let glow = neuralConfig.neuron.glow;
+
+                const distanceToMouse = Math.sqrt((this.x - mouse.x) ** 2 + (this.y - mouse.y) ** 2);
+                
+                // --- Mouse Interaction ---
+                if (distanceToMouse < neuralConfig.mouse.radius) {
+                    const proximity = 1 - (distanceToMouse / neuralConfig.mouse.radius);
+                    radius += proximity * 4; // Enlarge neuron when mouse is near
+                    glow = neuralConfig.neuron.fireGlow;
+                }
+                
+                // --- Firing Animation ---
+                if (this.activation > 0) {
+                    radius += this.activation * 5;
+                    color = `rgba(255, 255, 255, ${this.activation})`;
+                    glow = `rgba(153, 204, 255, ${this.activation * 0.5})`;
+                }
+                
+                // Draw the glow
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = glow;
+                
+                // Draw the neuron
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, radius, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.fill();
+
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        class Pulse {
+            constructor(startNeuron, endNeuron) {
+                this.start = startNeuron;
+                this.end = endNeuron;
+                this.progress = 0;
+            }
+
+            update() {
+                this.progress += neuralConfig.pulse.speed;
+            }
+
+            draw() {
+                const x = this.start.x + (this.end.x - this.start.x) * this.progress;
+                const y = this.start.y + (this.end.y - this.start.y) * this.progress;
+
+                ctx.beginPath();
+                ctx.arc(x, y, neuralConfig.pulse.radius, 0, Math.PI * 2);
+                ctx.fillStyle = neuralConfig.pulse.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = neuralConfig.pulse.color;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        function initializeNetwork() {
+            const layerSpacing = canvas.width / (neuralConfig.layers.length + 1);
+
+            neuralConfig.layers.forEach((neuronCount, layerIndex) => {
+                const layerNeurons = [];
+                const x = layerSpacing * (layerIndex + 1);
+                const ySpacing = canvas.height / (neuronCount + 1);
+
+                for (let i = 0; i < neuronCount; i++) {
+                    const y = ySpacing * (i + 1);
+                    layerNeurons.push(new Neuron(x, y));
+                }
+                neurons.push(layerNeurons);
+            });
+        }
+
+        function triggerPulseFrom(startNeuron, startLayerIndex) {
+            if (startLayerIndex >= neurons.length - 1) return;
+
+            const endLayerIndex = startLayerIndex + 1;
+            const endNeuronIndex = Math.floor(Math.random() * neurons[endLayerIndex].length);
+            const endNeuron = neurons[endLayerIndex][endNeuronIndex];
+
+            pulses.push(new Pulse(startNeuron, endNeuron));
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // --- Draw lines ---
+            ctx.strokeStyle = neuralConfig.line.color;
+            ctx.lineWidth = neuralConfig.line.width;
+            for (let i = 0; i < neurons.length - 1; i++) {
+                for (const startNeuron of neurons[i]) {
+                    for (const endNeuron of neurons[i + 1]) {
+                        const distanceToMouse = Math.sqrt((startNeuron.x - mouse.x) ** 2 + (startNeuron.y - mouse.y) ** 2);
+                        let opacity = 1;
+                        if (distanceToMouse < neuralConfig.mouse.radius) {
+                            opacity = Math.max(1 - (distanceToMouse / neuralConfig.mouse.radius), 0.2);
+                        }
+                        
+                        ctx.strokeStyle = `rgba(100, 180, 255, ${0.15 * opacity})`;
+                        ctx.beginPath();
+                        ctx.moveTo(startNeuron.x, startNeuron.y);
+                        ctx.lineTo(endNeuron.x, endNeuron.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // --- Update and draw neurons ---
+            for (const layer of neurons) {
+                for (const neuron of layer) {
+                    neuron.update();
+                    neuron.draw();
+                }
+            }
+            
+            // --- Update and draw pulses ---
+            for (let i = pulses.length - 1; i >= 0; i--) {
+                const pulse = pulses[i];
+                pulse.update();
+                pulse.draw();
+
+                if (pulse.progress >= 1) {
+                    // --- Trigger chain reaction ---
+                    pulse.end.fire(); // Make the destination neuron fire
+                    const endLayerIndex = neurons.findIndex(layer => layer.includes(pulse.end));
+                    // Trigger 1-2 new pulses from the neuron that was just hit
+                    for(let k = 0; k < Math.random() * 2; k++) {
+                        triggerPulseFrom(pulse.end, endLayerIndex);
+                    }
+                    pulses.splice(i, 1);
+                }
+            }
+
+            // Randomly trigger new "background" pulses from the first layer
+            if (Math.random() < 0.04) {
+                const startLayerIndex = 0;
+                const startNeuronIndex = Math.floor(Math.random() * neurons[startLayerIndex].length);
+                const startNeuron = neurons[startLayerIndex][startNeuronIndex];
+                triggerPulseFrom(startNeuron, startLayerIndex);
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // --- Start Neural Network Animation ---
+        initializeNetwork();
+        animate();
+
+        // Chess Game Logic
+        $(document).ready(function() {
+            // --- Global Variables ---
+            let board = null;
+            let game = new Chess();
+            const whiteCapturedContainer = $('#white-captured');
+            const blackCapturedContainer = $('#black-captured');
+            const statusEl = $('#game-status');
+            const pgnContainer = $('#pgn-container');
+            const pgnOutput = $('#pgn-output');
+
+            // --- Piece Theme ---
+            const pieceTheme = (piece) => `https://chessboardjs.com/img/chesspieces/wikipedia/${piece}.png`;
+
+            // --- Bot Logic ---
+            function makeBotMove() {
+                if (game.game_over()) return;
+
+                const possibleMoves = game.moves({ verbose: true });
+                if (possibleMoves.length === 0) return;
+
+                // Bot makes a random legal move
+                const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)].san;
+                
+                game.move(randomMove);
+                board.position(game.fen());
+                updateStatus();
+            }
+
+            // --- Board Event Handlers ---
+            function onDragStart(source, piece) {
+                return !game.game_over() && game.turn() === 'w' && piece.search(/^w/) !== -1;
+            }
+
+            function onDrop(source, target) {
+                const move = game.move({ from: source, to: target, promotion: 'q' });
+                if (move === null) return 'snapback';
+                updateStatus();
+                window.setTimeout(makeBotMove, 250);
+            }
+
+            function onSnapEnd() {
+                board.position(game.fen());
+            }
+
+            // --- Game Status & UI Update ---
+            function updateStatus() {
+                let status = '';
+                const capturedPieces = game.history({ verbose: true }).reduce((acc, move) => {
+                    if ('captured' in move) {
+                         const color = move.color === 'w' ? 'b' : 'w';
+                         acc[color].push(move.captured);
+                    }
+                    return acc;
+                }, { w: [], b: [] });
+                
+                whiteCapturedContainer.empty();
+                capturedPieces.w.forEach(p => whiteCapturedContainer.append(`<img src="${pieceTheme('w' + p.toUpperCase())}" alt="${p}">`));
+                blackCapturedContainer.empty();
+                capturedPieces.b.forEach(p => blackCapturedContainer.append(`<img src="${pieceTheme('b' + p.toUpperCase())}" alt="${p}">`));
+
+                const moveColor = game.turn() === 'b' ? 'Black' : 'White';
+                if (game.in_checkmate()) {
+                    status = `Game over, ${moveColor} is in checkmate.`;
+                    $('#show-pgn').show();
+                } else if (game.in_draw()) {
+                    status = 'Game over, drawn position.';
+                    $('#show-pgn').show();
+                } else {
+                    status = `${moveColor}'s turn`;
+                    if (game.in_check()) status += `, ${moveColor} is in check.`;
+                    $('#show-pgn').hide();
+                }
+                statusEl.html(status);
+
+                if (game.game_over()) {
+                    pgnOutput.val(game.pgn());
+                }
+            }
+
+            // --- Board Configuration ---
+            const config = {
+                draggable: true,
+                position: 'start',
+                onDragStart: onDragStart,
+                onDrop: onDrop,
+                onSnapEnd: onSnapEnd,
+                pieceTheme: pieceTheme
+            };
+
+            // --- Initialization ---
+            board = Chessboard('chessBoard', config);
+            updateStatus();
+
+            // --- Event Handlers ---
+            $('#restart-button').on('click', () => {
+                game.reset();
+                board.start();
+                updateStatus();
+                pgnContainer.hide();
+            });
+
+            $('#show-pgn').on('click', () => {
+                pgnContainer.show();
+            });
+
+            $('#hide-pgn').on('click', () => {
+                pgnContainer.hide();
+            });
+
+            $('#download-pgn').on('click', () => {
+                const pgnData = game.pgn();
+                const blob = new Blob([pgnData], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `chess-game-${Date.now()}.pgn`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        });
+    </script>
+</body>
+</html> 

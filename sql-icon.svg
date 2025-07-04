@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="35" height="35">
+  <rect width="24" height="24" rx="2" fill="#336791"/>
+  <ellipse cx="12" cy="8" rx="7" ry="2" fill="white"/>
+  <ellipse cx="12" cy="12" rx="7" ry="1.5" fill="none" stroke="white" stroke-width="1"/>
+  <ellipse cx="12" cy="16" rx="7" ry="1.5" fill="none" stroke="white" stroke-width="1"/>
+  <rect x="5" y="7" width="1" height="10" fill="white"/>
+  <rect x="18" y="7" width="1" height="10" fill="white"/>
+  <text x="12" y="21.5" font-family="Arial, sans-serif" font-size="3" font-weight="bold" text-anchor="middle" fill="white">SQL</text>
+</svg> 

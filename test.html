@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Page - Suhrit's Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #007bff, #28a745);
+            color: white;
+            text-align: center;
+            padding: 50px;
+        }
+        .success {
+            background: rgba(255,255,255,0.2);
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem auto;
+            max-width: 500px;
+        }
+    </style>
+</head>
+<body>
+    <div class="success">
+        <h1>🎉 SUCCESS!</h1>
+        <h2>Suhrit's Website is Working!</h2>
+        <p>Server: npx serve</p>
+        <p>Time: <span id="time"></span></p>
+        <hr>
+        <p><a href="/index-simple" style="color: yellow;">→ Go to Simple Website</a></p>
+        <p><a href="/" style="color: yellow;">→ Go to Full Website</a></p>
+    </div>
+    
+    <script>
+        document.getElementById('time').textContent = new Date().toLocaleString();
+    </script>
+</body>
+</html> 

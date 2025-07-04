@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="35" height="35">
+  <rect width="24" height="24" fill="#4479a1"/>
+  <ellipse cx="12" cy="8" rx="6" ry="2" fill="white"/>
+  <ellipse cx="12" cy="12" rx="6" ry="1.5" fill="none" stroke="white" stroke-width="1"/>
+  <ellipse cx="12" cy="16" rx="6" ry="1.5" fill="none" stroke="white" stroke-width="1"/>
+  <rect x="6" y="7" width="1" height="10" fill="white"/>
+  <rect x="17" y="7" width="1" height="10" fill="white"/>
+  <text x="12" y="21.5" font-family="Arial, sans-serif" font-size="2.5" font-weight="bold" text-anchor="middle" fill="white">MySQL</text>
+</svg> 
