@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suhrit Padakanti</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💻</text></svg>">
     
     <!-- Chess Game Libraries -->
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
@@ -18,11 +19,55 @@
             box-sizing: border-box;
         }
 
+        /* CSS Variables for Dark Mode */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-tertiary: #555555;
+            --accent-primary: #007bff;
+            --accent-secondary: #0056b3;
+            --border-color: #e9ecef;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-medium: rgba(0, 0, 0, 0.15);
+            --shadow-dark: rgba(0, 0, 0, 0.2);
+            --nav-bg: rgba(255, 255, 255, 0.95);
+            --hero-bg: #02001a;
+            --hero-text: #ffffff;
+            --hero-text-secondary: #ccddff;
+            --skill-bg: #ffffff;
+            --card-bg: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-tertiary: #aaaaaa;
+            --accent-primary: #4fc3f7;
+            --accent-secondary: #29b6f6;
+            --border-color: #333333;
+            --shadow-light: rgba(255, 255, 255, 0.1);
+            --shadow-medium: rgba(255, 255, 255, 0.15);
+            --shadow-dark: rgba(255, 255, 255, 0.2);
+            --nav-bg: rgba(18, 18, 18, 0.95);
+            --hero-bg: #0a0a0a;
+            --hero-text: #ffffff;
+            --hero-text-secondary: #ccddff;
+            --skill-bg: #1e1e1e;
+            --card-bg: #1e1e1e;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background-color: #fff;
+            color: var(--text-primary);
+            background-color: var(--bg-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .container {
@@ -37,11 +82,11 @@
             top: 0;
             left: 0;
             right: 0;
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: var(--nav-bg);
             backdrop-filter: blur(10px);
             z-index: 1000;
             padding: 1rem 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px var(--shadow-light);
         }
 
         .nav-container {
@@ -53,7 +98,7 @@
         .logo {
             font-size: 1.2rem;
             font-weight: bold;
-            color: #333;
+            color: var(--text-primary);
             text-decoration: none;
         }
 
@@ -71,31 +116,68 @@
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
-            color: #333;
+            color: var(--text-primary);
+        }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: var(--text-primary);
+            transition: transform 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 50%;
+            margin-left: 0.5rem;
+        }
+
+        .dark-mode-toggle:hover {
+            transform: scale(1.1);
+            background-color: var(--bg-tertiary);
+        }
+
+        /* Desktop Navigation Toggle Position */
+        @media (min-width: 769px) {
+            .nav-container {
+                position: relative;
+            }
+            
+            .nav-menu {
+                position: relative;
+            }
+            
+            .dark-mode-toggle {
+                position: absolute;
+                right: -60px;
+                top: 50%;
+                transform: translateY(-50%);
+                margin-left: 0;
+            }
         }
 
         .nav-menu a {
             text-decoration: none;
-            color: #333;
+            color: var(--text-primary);
             font-weight: 500;
             transition: color 0.3s ease;
         }
 
         .nav-menu a:hover {
-            color: #007bff;
+            color: var(--accent-primary);
         }
 
         .resume-btn {
             padding: 0.5rem 1rem;
-            border: 2px solid #007bff;
+            border: 2px solid var(--accent-primary);
             border-radius: 5px;
-            color: #007bff !important;
+            color: var(--accent-primary) !important;
             transition: all 0.3s ease;
         }
 
         .resume-btn:hover {
-            background-color: #007bff;
-            color: #fff !important;
+            background-color: var(--accent-primary);
+            color: var(--bg-primary) !important;
         }
 
         /* Hero Section */
@@ -106,7 +188,7 @@
             padding-top: 80px;
             position: relative;
             overflow: hidden;
-            background-color: #02001a; /* Dark navy blue background */
+            background-color: var(--hero-bg);
         }
 
         /* Neural Network Canvas */
@@ -134,13 +216,13 @@
         .hero h1 {
             font-size: 3.5rem;
             margin-bottom: 1rem;
-            color: #ffffff; /* White text for dark background */
+            color: var(--hero-text);
         }
 
         .hero h2 {
             font-size: 1.5rem;
             margin-bottom: 2rem;
-            color: #ccddff; /* Light blue text for dark background */
+            color: var(--hero-text-secondary);
             font-weight: 400;
         }
 
@@ -156,8 +238,8 @@
             justify-content: center;
             width: 50px;
             height: 50px;
-            background-color: #007bff;
-            color: white;
+            background-color: var(--accent-primary);
+            color: var(--bg-primary);
             border-radius: 50%;
             text-decoration: none;
             transition: transform 0.3s ease;
@@ -176,8 +258,8 @@
         .cta-button {
             display: inline-block;
             padding: 1rem 2rem;
-            background-color: #007bff;
-            color: white;
+            background-color: var(--accent-primary);
+            color: var(--bg-primary);
             text-decoration: none;
             border-radius: 5px;
             font-weight: bold;
@@ -185,7 +267,7 @@
         }
 
         .cta-button:hover {
-            background-color: #0056b3;
+            background-color: var(--accent-secondary);
         }
 
         /* Section Styling */
@@ -207,12 +289,12 @@
             left: 0;
             width: 60px;
             height: 3px;
-            background-color: #007bff;
+            background-color: var(--accent-primary);
         }
 
         /* About Section */
         .about {
-            background-color: #f8f9fa;
+            background-color: var(--bg-secondary);
         }
 
         .about-content {
@@ -225,42 +307,42 @@
         .about-image {
             width: 100%;
             height: 300px;
-            background-color: #ddd;
+            background-color: var(--bg-tertiary);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #666;
+            color: var(--text-secondary);
             font-size: 1.1rem;
         }
 
         .about-text {
             font-size: 1.1rem;
             line-height: 1.8;
-            color: #555;
+            color: var(--text-secondary);
         }
 
         .education-info {
-            background-color: #e9f4ff;
+            background-color: var(--bg-tertiary);
             padding: 1.5rem;
             border-radius: 10px;
             margin-top: 2rem;
-            border-left: 4px solid #007bff;
+            border-left: 4px solid var(--accent-primary);
         }
 
         .education-info h4 {
-            color: #007bff;
+            color: var(--accent-primary);
             margin-bottom: 0.5rem;
         }
 
         .education-info p {
             margin-bottom: 0.5rem;
-            color: #666;
+            color: var(--text-secondary);
         }
 
         /* Experience Section */
         .experience {
-            background-color: #fff;
+            background-color: var(--bg-primary);
         }
 
         .timeline {
@@ -276,7 +358,7 @@
             top: 0;
             bottom: 0;
             width: 2px;
-            background-color: #007bff;
+            background-color: var(--accent-primary);
         }
 
         .timeline-item {
@@ -292,13 +374,13 @@
             top: 5px;
             width: 14px;
             height: 14px;
-            background-color: #007bff;
+            background-color: var(--accent-primary);
             border-radius: 50%;
         }
 
         .timeline-date {
-            background-color: #007bff;
-            color: white;
+            background-color: var(--accent-primary);
+            color: var(--bg-primary);
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-size: 0.9rem;
@@ -310,18 +392,18 @@
             font-size: 1.3rem;
             font-weight: bold;
             margin-bottom: 0.5rem;
-            color: #333;
+            color: var(--text-primary);
         }
 
         .timeline-company {
             font-size: 1rem;
-            color: #666;
+            color: var(--text-secondary);
             margin-bottom: 1rem;
         }
 
         /* Skills Section */
         .skills {
-            background-color: #f8f9fa;
+            background-color: var(--bg-secondary);
         }
 
         .skills-container {
@@ -336,7 +418,7 @@
         .skill-section h4 {
             font-size: 1.8rem;
             margin-bottom: 2rem;
-            color: #333;
+            color: var(--text-primary);
             text-align: center;
             position: relative;
         }
@@ -349,7 +431,7 @@
             transform: translateX(-50%);
             width: 50px;
             height: 2px;
-            background-color: #007bff;
+            background-color: var(--accent-primary);
         }
 
         .skills-grid {
@@ -364,9 +446,9 @@
             flex-direction: column;
             align-items: center;
             padding: 1.5rem;
-            background-color: white;
+            background-color: var(--card-bg);
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px var(--shadow-light);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             width: 100%;
             max-width: 140px;
@@ -374,7 +456,7 @@
 
         .skill-item:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 6px 25px var(--shadow-medium);
         }
 
         .skill-icon {
@@ -384,7 +466,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #f8f9fa;
+            background-color: var(--skill-bg);
             border-radius: 10px;
         }
 
@@ -397,35 +479,35 @@
         .skill-name {
             font-size: 0.9rem;
             font-weight: 600;
-            color: #333;
+            color: var(--text-primary);
             text-align: center;
             line-height: 1.2;
         }
 
         /* Technology-specific colors */
-        .skill-item[data-tech="python"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="javascript"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="typescript"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="java"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="swift"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="cpp"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="sql"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="html"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="react"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="nextjs"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="node"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="tailwind"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="aws"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="docker"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="kubernetes"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="graphql"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="firebase"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="redis"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="tensorflow"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="pytorch"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="mongodb"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="mysql"] .skill-icon { background-color: #f8f9fa; }
-        .skill-item[data-tech="git"] .skill-icon { background-color: #f8f9fa; }
+        .skill-item[data-tech="python"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="javascript"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="typescript"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="java"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="swift"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="cpp"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="sql"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="html"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="react"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="nextjs"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="node"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="tailwind"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="aws"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="docker"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="kubernetes"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="graphql"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="firebase"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="redis"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="tensorflow"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="pytorch"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="mongodb"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="mysql"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="git"] .skill-icon { background-color: var(--skill-bg); }
 
         /* Remove old skill category styles */
         .skill-category {
@@ -434,7 +516,7 @@
 
         /* Projects Section */
         .projects {
-            background-color: #fff;
+            background-color: var(--bg-primary);
         }
 
         .project-grid {
@@ -444,10 +526,10 @@
         }
 
         .project-card {
-            background-color: white;
+            background-color: var(--card-bg);
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 20px var(--shadow-light);
             transition: transform 0.3s ease;
         }
 
@@ -463,11 +545,11 @@
             font-size: 1.3rem;
             font-weight: bold;
             margin-bottom: 1rem;
-            color: #333;
+            color: var(--text-primary);
         }
 
         .project-description {
-            color: #666;
+            color: var(--text-secondary);
             margin-bottom: 1rem;
             line-height: 1.6;
         }
@@ -480,11 +562,11 @@
         }
 
         .tech-tag {
-            background-color: #e9ecef;
+            background-color: var(--bg-tertiary);
             padding: 0.3rem 0.8rem;
             border-radius: 15px;
             font-size: 0.9rem;
-            color: #495057;
+            color: var(--text-secondary);
         }
 
         .project-links {
@@ -494,7 +576,7 @@
 
         .project-btn {
             padding: 0.5rem 1rem;
-            border: 1px solid #007bff;
+            border: 1px solid var(--accent-primary);
             border-radius: 5px;
             text-decoration: none;
             transition: all 0.3s ease;
@@ -503,17 +585,17 @@
 
         .project-btn.secondary {
             background-color: transparent;
-            color: #007bff;
+            color: var(--accent-primary);
         }
 
         .project-btn.secondary:hover {
-            background-color: #007bff;
-            color: white;
+            background-color: var(--accent-primary);
+            color: var(--bg-primary);
         }
 
         /* Contact Section */
         .contact {
-            background-color: #f8f9fa;
+            background-color: var(--bg-secondary);
         }
 
         .contact-content {
@@ -525,15 +607,15 @@
         .contact-text {
             font-size: 1.1rem;
             line-height: 1.8;
-            color: #555;
+            color: var(--text-secondary);
             margin-bottom: 2rem;
         }
 
         .contact-btn {
             display: inline-block;
             padding: 1rem 2rem;
-            background-color: #007bff;
-            color: white;
+            background-color: var(--accent-primary);
+            color: var(--bg-primary);
             text-decoration: none;
             border-radius: 5px;
             font-weight: bold;
@@ -541,15 +623,16 @@
         }
 
         .contact-btn:hover {
-            background-color: #0056b3;
+            background-color: var(--accent-secondary);
         }
 
         /* Footer */
         footer {
-            background-color: #333;
-            color: white;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
             padding: 3rem 0;
             text-align: center;
+            border-top: 1px solid var(--border-color);
         }
 
         .footer-content {
@@ -569,8 +652,8 @@
             justify-content: center;
             width: 40px;
             height: 40px;
-            background-color: #007bff;
-            color: white;
+            background-color: var(--accent-primary);
+            color: var(--bg-primary);
             border-radius: 50%;
             text-decoration: none;
             transition: transform 0.3s ease;
@@ -586,6 +669,26 @@
             filter: brightness(0) invert(1);
         }
 
+        /* Dark Mode Specific Styles */
+        [data-theme="dark"] .mobile-instructions {
+            background-color: rgba(79, 195, 247, 0.1);
+            border: 1px solid var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        [data-theme="dark"] .hero {
+            background-color: #0a0a0a;
+        }
+
+        [data-theme="dark"] .board-wrapper .highlight-white {
+            background-color: rgba(79, 195, 247, 0.3) !important;
+            box-shadow: inset 0 0 0 3px #4fc3f7 !important;
+        }
+
+        [data-theme="dark"] .captured-pieces-container {
+            background-color: rgba(79, 195, 247, 0.1);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .mobile-menu-toggle {
@@ -598,17 +701,18 @@
                 left: -100%;
                 width: 100%;
                 height: calc(100vh - 80px);
-                background-color: rgba(255, 255, 255, 0.98);
+                background-color: var(--bg-primary);
                 backdrop-filter: blur(10px);
                 flex-direction: column;
                 justify-content: flex-start;
                 align-items: center;
                 gap: 2rem;
-                padding: 3rem 1rem 2rem 1rem; /* Add horizontal padding */
+                padding: 3rem 1rem 2rem 1rem;
                 transition: left 0.3s ease;
                 z-index: 999;
-                box-sizing: border-box; /* Ensure padding is included in width */
-                overflow-y: auto; /* Allow scrolling if content is too tall */
+                box-sizing: border-box;
+                overflow-y: auto;
+                border-right: 1px solid var(--border-color);
             }
 
             .nav-menu.active {
@@ -618,7 +722,7 @@
             .nav-menu li {
                 width: 100%;
                 text-align: center;
-                max-width: 300px; /* Prevent items from being too wide */
+                max-width: 300px;
             }
 
             .nav-menu a {
@@ -630,12 +734,23 @@
             }
 
             .resume-btn {
-                margin: 0.5rem auto; /* Center the button with minimal margin */
-                display: block !important; /* Force block display */
-                width: 150px; /* Fixed width to prevent overflow */
-                max-width: 90%; /* Ensure it doesn't exceed container */
+                margin: 0.5rem auto;
+                display: block !important;
+                width: 150px;
+                max-width: 90%;
                 text-align: center;
                 box-sizing: border-box;
+            }
+
+            .dark-mode-toggle {
+                position: static;
+                transform: none;
+                margin: 0.5rem auto;
+                font-size: 1.6rem;
+            }
+
+            .dark-mode-toggle:hover {
+                transform: scale(1.1);
             }
 
             .hero h1 {
@@ -646,9 +761,8 @@
                 font-size: 1.2rem;
             }
 
-            /* Optimize neural network animation for mobile */
             #neuralNetworkCanvas {
-                opacity: 0.7; /* Reduce intensity on mobile */
+                opacity: 0.7;
             }
 
             .about-content {
@@ -700,14 +814,12 @@
             }
         }
 
-        /* Smooth scrolling */
         html {
             scroll-behavior: smooth;
         }
 
-        /* Chess Game Section */
         .chess {
-            background-color: #fff;
+            background-color: var(--bg-primary);
         }
 
         .chess-container {
@@ -719,28 +831,28 @@
         .chess-game-wrapper {
             max-width: 600px;
             margin: 0 auto;
-            background-color: #f8f9fa;
+            background-color: var(--bg-secondary);
             border-radius: 15px;
             padding: 2rem;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 20px var(--shadow-light);
         }
 
         .game-status {
             font-size: 1.2rem;
             font-weight: 600;
             margin-bottom: 1rem;
-            color: #333;
+            color: var(--text-primary);
             min-height: 2rem;
         }
 
         .mobile-instructions {
             background-color: rgba(0, 123, 255, 0.1);
-            border: 1px solid #007bff;
+            border: 1px solid var(--accent-primary);
             border-radius: 8px;
             padding: 0.75rem;
             margin-bottom: 1rem;
             font-size: 0.9rem;
-            color: #007bff;
+            color: var(--accent-primary);
             text-align: center;
         }
 
@@ -750,8 +862,7 @@
             margin: 0 auto;
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            /* Prevent touch scrolling on the chess board */
+            box-shadow: 0 4px 15px var(--shadow-medium);
             touch-action: none;
             -webkit-touch-callout: none;
             -webkit-user-select: none;
@@ -760,7 +871,6 @@
             user-select: none;
         }
 
-        /* Prevent scrolling on chess pieces */
         .board-wrapper img {
             touch-action: none;
             -webkit-touch-callout: none;
@@ -771,18 +881,15 @@
             pointer-events: auto;
         }
 
-        /* Ensure chess board squares are touch-friendly */
         .board-wrapper .square-55d63 {
             touch-action: none;
         }
 
-        /* Highlighted square for mobile tap-to-move */
         .board-wrapper .highlight-white {
             background-color: rgba(255, 255, 0, 0.5) !important;
             box-shadow: inset 0 0 0 3px #ffff00 !important;
         }
 
-        /* Mobile chess board improvements */
         @media (max-width: 768px) {
             .board-wrapper .square-55d63 {
                 min-height: 40px;
@@ -824,8 +931,8 @@
 
         .chess-btn {
             padding: 0.75rem 1.5rem;
-            background-color: #007bff;
-            color: white;
+            background-color: var(--accent-primary);
+            color: var(--bg-primary);
             border: none;
             border-radius: 8px;
             font-weight: 600;
@@ -836,16 +943,16 @@
         }
 
         .chess-btn:hover {
-            background-color: #0056b3;
+            background-color: var(--accent-secondary);
             transform: translateY(-2px);
         }
 
         .chess-btn.secondary {
-            background-color: #6c757d;
+            background-color: var(--bg-tertiary);
         }
 
         .chess-btn.secondary:hover {
-            background-color: #545b62;
+            background-color: var(--text-secondary);
         }
 
         .pgn-container {
@@ -856,9 +963,9 @@
         .pgn-container textarea {
             width: 100%;
             height: 120px;
-            background-color: #ffffff;
-            color: #333;
-            border: 2px solid #e9ecef;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            border: 2px solid var(--bg-tertiary);
             border-radius: 8px;
             padding: 1rem;
             font-family: 'Courier New', monospace;
@@ -868,11 +975,10 @@
 
         .pgn-container h4 {
             margin-bottom: 0.5rem;
-            color: #333;
+            color: var(--text-primary);
             font-size: 1.1rem;
         }
 
-        /* Mobile Chess Responsive */
         @media (max-width: 768px) {
             .chess-game-wrapper {
                 padding: 1rem;
@@ -922,6 +1028,7 @@
                     <li><a href="#projects">Projects</a></li>
                     <li><a href="#contact">Contact</a></li>
                     <li><a href="resume.pdf" class="resume-btn" target="_blank">Resume</a></li>
+                    <li><button class="dark-mode-toggle" id="dark-mode-toggle">🌓</button></li>
                 </ul>
             </div>
         </div>
@@ -1296,6 +1403,65 @@
     </footer>
 
     <script>
+        // Dark Mode Toggle Functionality
+        function initializeDarkMode() {
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            const body = document.body;
+            
+            // Check for saved user preference or default to light mode
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme) {
+                body.setAttribute('data-theme', savedTheme);
+                updateDarkModeButton(savedTheme);
+            } else if (prefersDarkMode) {
+                body.setAttribute('data-theme', 'dark');
+                updateDarkModeButton('dark');
+            } else {
+                body.setAttribute('data-theme', 'light');
+                updateDarkModeButton('light');
+            }
+            
+            darkModeToggle.addEventListener('click', function() {
+                const currentTheme = body.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateDarkModeButton(newTheme);
+                
+                // Update neural network colors for dark mode
+                updateNeuralNetworkColors();
+            });
+        }
+        
+        function updateDarkModeButton(theme) {
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            darkModeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+            darkModeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+        }
+        
+        function updateNeuralNetworkColors() {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            
+            if (isDark) {
+                neuralConfig.neuron.color = 'rgba(79, 195, 247, 0.6)';
+                neuralConfig.neuron.glow = 'rgba(79, 195, 247, 0.3)';
+                neuralConfig.neuron.fireColor = '#ffffff';
+                neuralConfig.neuron.fireGlow = '#4fc3f7';
+                neuralConfig.line.color = 'rgba(79, 195, 247, 0.2)';
+                neuralConfig.pulse.color = '#4fc3f7';
+            } else {
+                neuralConfig.neuron.color = 'rgba(100, 180, 255, 0.6)';
+                neuralConfig.neuron.glow = 'rgba(100, 180, 255, 0.2)';
+                neuralConfig.neuron.fireColor = '#ffffff';
+                neuralConfig.neuron.fireGlow = '#99ccff';
+                neuralConfig.line.color = 'rgba(100, 180, 255, 0.15)';
+                neuralConfig.pulse.color = '#ccddff';
+            }
+        }
+
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -1565,6 +1731,7 @@
 
         // --- Start Neural Network Animation ---
         initializeNetwork();
+        updateNeuralNetworkColors(); // Set initial colors based on theme
         animate();
 
         // Chess Game Logic
@@ -1784,12 +1951,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             const mobileToggle = document.getElementById('mobile-menu-toggle');
             const navMenu = document.getElementById('nav-menu');
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
 
             mobileToggle.addEventListener('click', function() {
                 navMenu.classList.toggle('active');
             });
 
-            // Close mobile menu when clicking on a link
+            // Close mobile menu when clicking on navigation links (but not dark mode toggle)
             const navLinks = navMenu.querySelectorAll('a');
             navLinks.forEach(link => {
                 link.addEventListener('click', function() {
@@ -1797,9 +1965,11 @@
                 });
             });
 
-            // Close mobile menu when clicking outside
+            // Close mobile menu when clicking outside (but not on dark mode toggle)
             document.addEventListener('click', function(event) {
-                if (!navMenu.contains(event.target) && !mobileToggle.contains(event.target)) {
+                if (!navMenu.contains(event.target) && 
+                    !mobileToggle.contains(event.target) && 
+                    !darkModeToggle.contains(event.target)) {
                     navMenu.classList.remove('active');
                 }
             });
@@ -1815,6 +1985,9 @@
                     isScrolling = true;
                 }
             });
+
+            // Initialize dark mode
+            initializeDarkMode();
         });
     </script>
 </body>
