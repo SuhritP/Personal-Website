@@ -10,7 +10,8 @@
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"></script>
+
     
     <style>
         * {
@@ -856,6 +857,8 @@
             text-align: center;
         }
 
+
+
         .board-wrapper {
             width: 100%;
             max-width: 500px;
@@ -1335,6 +1338,9 @@
     <section id="chess" class="chess">
         <div class="container">
             <h3 class="section-title">Play against me!</h3>
+            <p style="text-align: center; margin-bottom: 2rem; color: var(--text-secondary);">
+                Challenge yourself to a game of chess! Powered by professional-grade analysis.
+            </p>
             <div class="chess-container">
                 <div class="chess-game-wrapper">
                     <div id="game-status" class="game-status">White's Turn</div>
@@ -1745,22 +1751,81 @@
             const pgnContainer = $('#pgn-container');
             const pgnOutput = $('#pgn-output');
 
+
+            // --- Chess Engine ---
+            let engineThinking = false;
+
+            // Get best move from Stockfish API
+            async function getEngineMove(fen) {
+                try {
+                    const response = await fetch(`https://stockfish.online/api/s/v2.php?fen=${encodeURIComponent(fen)}&depth=15`);
+                    const data = await response.json();
+                    
+                    if (data.success && data.bestmove) {
+                        // Extract move from "bestmove e2e4 ponder ..." format
+                        const moveMatch = data.bestmove.match(/bestmove\s+([a-h][1-8][a-h][1-8][qrbn]?)/);
+                        if (moveMatch) {
+                            return moveMatch[1];
+                        }
+                    }
+                    return null;
+                } catch (error) {
+                    console.error('Engine API error:', error);
+                    return null;
+                }
+            }
+
             // --- Piece Theme ---
             const pieceTheme = (piece) => `https://chessboardjs.com/img/chesspieces/wikipedia/${piece}.png`;
 
             // --- Bot Logic ---
-            function makeBotMove() {
-                if (game.game_over()) return;
+            async function makeBotMove() {
+                if (game.game_over() || engineThinking) return;
 
-                const possibleMoves = game.moves({ verbose: true });
-                if (possibleMoves.length === 0) return;
-
-                // Bot makes a random legal move
-                const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)].san;
+                engineThinking = true;
                 
-                game.move(randomMove);
-                board.position(game.fen());
-                updateStatus();
+                try {
+                    // Get current position FEN
+                    const currentFen = game.fen();
+                    console.log('Getting move for position:', currentFen);
+                    
+                    // Get best move from Stockfish API
+                    const bestMove = await getEngineMove(currentFen);
+                    
+                    if (bestMove) {
+                        console.log('Engine suggests:', bestMove);
+                        
+                        // Make the move
+                        const engineMove = game.move(bestMove);
+                        if (engineMove) {
+                            board.position(game.fen());
+                            updateStatus();
+                        } else {
+                            console.error('Invalid move from engine:', bestMove);
+                            // Fallback to random move
+                            makeRandomMove();
+                        }
+                    } else {
+                        console.log('No move from engine, using random move');
+                        makeRandomMove();
+                    }
+                } catch (error) {
+                    console.error('Error getting engine move:', error);
+                    makeRandomMove();
+                } finally {
+                    engineThinking = false;
+                }
+            }
+
+            // Fallback random move function
+            function makeRandomMove() {
+                const moves = game.moves();
+                if (moves.length > 0) {
+                    const randomMove = moves[Math.floor(Math.random() * moves.length)];
+                    game.move(randomMove);
+                    board.position(game.fen());
+                    updateStatus();
+                }
             }
 
             // --- Board Event Handlers ---
@@ -1809,9 +1874,11 @@
                 }
                 statusEl.html(status);
 
-                if (game.game_over()) {
-                    pgnOutput.val(game.pgn());
-                }
+                // Always update PGN output, even during the game
+                pgnOutput.val(game.pgn());
+                
+                // Debug: Log PGN to console
+                console.log('Current PGN:', game.pgn());
             }
 
             // --- Board Configuration ---
@@ -1831,6 +1898,9 @@
                 moveSpeed: 200
             };
 
+            // --- Mobile Detection ---
+            let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
             // --- Initialization ---
             board = Chessboard('chessBoard', config);
             updateStatus();
@@ -1843,7 +1913,6 @@
             // --- Additional Mobile Touch Support ---
             // Add custom touch event handlers for better mobile experience
             let selectedSquare = null;
-            let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             
             // Alternative tap-to-move system for mobile
             function onSquareClick(square) {
@@ -1920,12 +1989,18 @@
             // --- Event Handlers ---
             $('#restart-button').on('click', () => {
                 game.reset();
-                board.start();
+                board.position('start');
                 updateStatus();
                 pgnContainer.hide();
+                // Clear captured pieces displays
+                whiteCapturedContainer.empty();
+                blackCapturedContainer.empty();
+                // Reset engine state
+                engineThinking = false;
             });
 
             $('#show-pgn').on('click', () => {
+                console.log('Show PGN button clicked');
                 pgnContainer.show();
             });
 
