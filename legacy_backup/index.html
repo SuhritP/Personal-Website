@@ -1,0 +1,2049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suhrit Padakanti</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💻</text></svg>">
+    
+    <!-- Chess Game Libraries -->
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"></script>
+
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* CSS Variables for Dark Mode */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-tertiary: #555555;
+            --accent-primary: #007bff;
+            --accent-secondary: #0056b3;
+            --border-color: #e9ecef;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-medium: rgba(0, 0, 0, 0.15);
+            --shadow-dark: rgba(0, 0, 0, 0.2);
+            --nav-bg: rgba(255, 255, 255, 0.95);
+            --hero-bg: #02001a;
+            --hero-text: #ffffff;
+            --hero-text-secondary: #ccddff;
+            --skill-bg: #ffffff;
+            --card-bg: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-tertiary: #aaaaaa;
+            --accent-primary: #4fc3f7;
+            --accent-secondary: #29b6f6;
+            --border-color: #333333;
+            --shadow-light: rgba(255, 255, 255, 0.1);
+            --shadow-medium: rgba(255, 255, 255, 0.15);
+            --shadow-dark: rgba(255, 255, 255, 0.2);
+            --nav-bg: rgba(18, 18, 18, 0.95);
+            --hero-bg: #0a0a0a;
+            --hero-text: #ffffff;
+            --hero-text-secondary: #ccddff;
+            --skill-bg: #1e1e1e;
+            --card-bg: #1e1e1e;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--bg-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px var(--shadow-light);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        /* Mobile Navigation */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: var(--text-primary);
+            transition: transform 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 50%;
+            margin-left: 0.5rem;
+        }
+
+        .dark-mode-toggle:hover {
+            transform: scale(1.1);
+            background-color: var(--bg-tertiary);
+        }
+
+        /* Desktop Navigation Toggle Position */
+        @media (min-width: 769px) {
+            .nav-container {
+                position: relative;
+            }
+            
+            .nav-menu {
+                position: relative;
+            }
+            
+            .dark-mode-toggle {
+                position: absolute;
+                right: -60px;
+                top: 50%;
+                transform: translateY(-50%);
+                margin-left: 0;
+            }
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            color: var(--accent-primary);
+        }
+
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+            position: relative;
+            overflow: hidden;
+            background-color: var(--hero-bg);
+        }
+
+        /* Neural Network Canvas */
+        #neuralNetworkCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Remove old animation styles */
+        .hero::before,
+        .hero::after {
+            display: none;
+        }
+
+        .hero-content {
+            max-width: 600px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            color: var(--hero-text);
+        }
+
+        .hero h2 {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: var(--hero-text-secondary);
+            font-weight: 400;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background-color: var(--accent-primary);
+            color: var(--bg-primary);
+            border-radius: 50%;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .social-links a:hover {
+            transform: translateY(-3px);
+        }
+
+        .social-links img {
+            width: 24px;
+            height: 24px;
+            filter: brightness(0) invert(1);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: var(--accent-primary);
+            color: var(--bg-primary);
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background-color: var(--accent-secondary);
+        }
+
+        /* Section Styling */
+        section {
+            padding: 5rem 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background-color: var(--accent-primary);
+        }
+
+        /* About Section */
+        .about {
+            background-color: var(--bg-secondary);
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .about-image {
+            width: 100%;
+            height: 300px;
+            background-color: var(--bg-tertiary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .about-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .education-info {
+            background-color: var(--bg-tertiary);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+            border-left: 4px solid var(--accent-primary);
+        }
+
+        .education-info h4 {
+            color: var(--accent-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .education-info p {
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        /* Experience Section */
+        .experience {
+            background-color: var(--bg-primary);
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--accent-primary);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 80px;
+            margin-bottom: 3rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 24px;
+            top: 5px;
+            width: 14px;
+            height: 14px;
+            background-color: var(--accent-primary);
+            border-radius: 50%;
+        }
+
+        .timeline-date {
+            background-color: var(--accent-primary);
+            color: var(--bg-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .timeline-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .timeline-company {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        /* Skills Section */
+        .skills {
+            background-color: var(--bg-secondary);
+        }
+
+        .skills-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .skill-section {
+            margin-bottom: 4rem;
+        }
+
+        .skill-section h4 {
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+            text-align: center;
+            position: relative;
+        }
+
+        .skill-section h4::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background-color: var(--accent-primary);
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 2rem;
+            justify-items: center;
+        }
+
+        .skill-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem;
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px var(--shadow-light);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 100%;
+            max-width: 140px;
+        }
+
+        .skill-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 25px var(--shadow-medium);
+        }
+
+        .skill-icon {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--skill-bg);
+            border-radius: 10px;
+        }
+
+        .skill-icon img {
+            width: 35px;
+            height: 35px;
+            object-fit: contain;
+        }
+
+        .skill-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        /* Technology-specific colors */
+        .skill-item[data-tech="python"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="javascript"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="typescript"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="java"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="swift"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="cpp"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="sql"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="html"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="react"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="nextjs"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="node"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="tailwind"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="aws"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="docker"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="kubernetes"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="graphql"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="firebase"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="redis"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="tensorflow"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="pytorch"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="mongodb"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="mysql"] .skill-icon { background-color: var(--skill-bg); }
+        .skill-item[data-tech="git"] .skill-icon { background-color: var(--skill-bg); }
+
+        /* Remove old skill category styles */
+        .skill-category {
+            display: none;
+        }
+
+        /* Projects Section */
+        .projects {
+            background-color: var(--bg-primary);
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px var(--shadow-light);
+            transition: transform 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .project-content {
+            padding: 1.5rem;
+        }
+
+        .project-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .project-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tech-tag {
+            background-color: var(--bg-tertiary);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .project-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .project-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--accent-primary);
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .project-btn.secondary {
+            background-color: transparent;
+            color: var(--accent-primary);
+        }
+
+        .project-btn.secondary:hover {
+            background-color: var(--accent-primary);
+            color: var(--bg-primary);
+        }
+
+        /* Contact Section */
+        .contact {
+            background-color: var(--bg-secondary);
+        }
+
+        .contact-content {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .contact-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .contact-btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: var(--accent-primary);
+            color: var(--bg-primary);
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .contact-btn:hover {
+            background-color: var(--accent-secondary);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            padding: 3rem 0;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-content {
+            margin-bottom: 2rem;
+        }
+
+        .footer-social {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .footer-social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: var(--accent-primary);
+            color: var(--bg-primary);
+            border-radius: 50%;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            transform: translateY(-3px);
+        }
+
+        .footer-social img {
+            width: 20px;
+            height: 20px;
+            filter: brightness(0) invert(1);
+        }
+
+        /* Dark Mode Specific Styles */
+        [data-theme="dark"] .mobile-instructions {
+            background-color: rgba(79, 195, 247, 0.1);
+            border: 1px solid var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        [data-theme="dark"] .hero {
+            background-color: #0a0a0a;
+        }
+
+        [data-theme="dark"] .board-wrapper .highlight-white {
+            background-color: rgba(79, 195, 247, 0.3) !important;
+            box-shadow: inset 0 0 0 3px #4fc3f7 !important;
+        }
+
+        [data-theme="dark"] .captured-pieces-container {
+            background-color: rgba(79, 195, 247, 0.1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 80px);
+                background-color: var(--bg-primary);
+                backdrop-filter: blur(10px);
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 2rem;
+                padding: 3rem 1rem 2rem 1rem;
+                transition: left 0.3s ease;
+                z-index: 999;
+                box-sizing: border-box;
+                overflow-y: auto;
+                border-right: 1px solid var(--border-color);
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .nav-menu li {
+                width: 100%;
+                text-align: center;
+                max-width: 300px;
+            }
+
+            .nav-menu a {
+                display: block;
+                padding: 1rem;
+                font-size: 1.2rem;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+
+            .dark-mode-toggle {
+                position: static;
+                transform: none;
+                margin: 0.5rem auto;
+                font-size: 1.6rem;
+            }
+
+            .dark-mode-toggle:hover {
+                transform: scale(1.1);
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero h2 {
+                font-size: 1.2rem;
+            }
+
+            #neuralNetworkCanvas {
+                opacity: 0.7;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .timeline {
+                padding-left: 0;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item {
+                padding-left: 60px;
+            }
+
+            .timeline-item::before {
+                left: 14px;
+            }
+
+            .skills-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .skill-item {
+                padding: 1rem;
+                max-width: 120px;
+            }
+
+            .skill-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .skill-name {
+                font-size: 0.8rem;
+            }
+
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .project-links {
+                flex-direction: column;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .chess {
+            background-color: var(--bg-primary);
+        }
+
+        .chess-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .chess-game-wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px var(--shadow-light);
+        }
+
+        .game-status {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            min-height: 2rem;
+        }
+
+        .mobile-instructions {
+            background-color: rgba(0, 123, 255, 0.1);
+            border: 1px solid var(--accent-primary);
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: var(--accent-primary);
+            text-align: center;
+        }
+
+
+
+        .board-wrapper {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px var(--shadow-medium);
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .board-wrapper img {
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            pointer-events: auto;
+        }
+
+        .board-wrapper .square-55d63 {
+            touch-action: none;
+        }
+
+        .board-wrapper .highlight-white {
+            background-color: rgba(255, 255, 0, 0.5) !important;
+            box-shadow: inset 0 0 0 3px #ffff00 !important;
+        }
+
+        @media (max-width: 768px) {
+            .board-wrapper .square-55d63 {
+                min-height: 40px;
+                min-width: 40px;
+            }
+            
+            .board-wrapper img {
+                max-width: 90%;
+                max-height: 90%;
+            }
+        }
+
+        .captured-pieces-container {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            margin: 1rem auto;
+            min-height: 50px;
+            padding: 0 10px;
+            background-color: rgba(0, 123, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        .captured-pieces-container img {
+            width: 35px;
+            height: 35px;
+            opacity: 0.8;
+        }
+
+        .chess-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .chess-btn {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--accent-primary);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .chess-btn:hover {
+            background-color: var(--accent-secondary);
+            transform: translateY(-2px);
+        }
+
+        .chess-btn.secondary {
+            background-color: var(--bg-tertiary);
+        }
+
+        .chess-btn.secondary:hover {
+            background-color: var(--text-secondary);
+        }
+
+        .pgn-container {
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .pgn-container textarea {
+            width: 100%;
+            height: 120px;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            border: 2px solid var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+        }
+
+        .pgn-container h4 {
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .chess-game-wrapper {
+                padding: 1rem;
+                margin: 0 1rem;
+            }
+
+            .board-wrapper {
+                max-width: 90vw;
+            }
+
+            .captured-pieces-container {
+                height: 40px;
+                min-height: 40px;
+            }
+
+            .captured-pieces-container img {
+                width: 28px;
+                height: 28px;
+            }
+
+            .chess-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .chess-btn {
+                width: 200px;
+            }
+
+            .game-status {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="nav-container">
+                <a href="#" class="logo">Suhrit Padakanti</a>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle">☰</button>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#experience">Experience</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><button class="dark-mode-toggle" id="dark-mode-toggle">🌓</button></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <canvas id="neuralNetworkCanvas"></canvas>
+        <div class="container">
+            <div class="hero-content">
+                <h1>Suhrit Padakanti</h1>
+                <h2>Computer Science Student & Software Engineer.</h2>
+                
+                <div class="social-links">
+                    <a href="https://linkedin.com/in/suhrit-padakanti" target="_blank" title="LinkedIn">
+                        <img src="linkedin-icon.svg" alt="LinkedIn">
+                    </a>
+                    <a href="https://github.com/SuhritP" target="_blank" title="GitHub">
+                        <img src="github-icon.svg" alt="GitHub">
+                    </a>
+                </div>
+                
+                <a href="#projects" class="cta-button">View My Work</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h3 class="section-title">About Me</h3>
+            <div class="about-content">
+                <div class="about-image">
+                    <img src="Professional Headshot.jpg" alt="Professional headshot of Suhrit" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                </div>
+                <div class="about-text">
+                    <p>Hello! I'm Suhrit, a passionate Computer Science student at UC Santa Barbara with a strong foundation in software engineering, cloud infrastructure, and AI research. My journey spans from building scalable web applications to developing cutting-edge solutions in vulnerability detection and fMRI image reconstruction.</p>
+                    
+                    <p>I thrive in challenging environments where I can apply my technical expertise to solve complex problems. Whether it's architecting cloud solutions, developing machine learning models, or building full-stack applications, I'm driven by the opportunity to create impactful technology that makes a difference.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="experience">
+        <div class="container">
+            <h3 class="section-title">Work Experience</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">Apr 2025 - Present</div>
+                    <div class="timeline-title">Cloud Solutions Architect Intern</div>
+                    <div class="timeline-company">UCSB ITS</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">Sep 2024 - Apr 2025</div>
+                    <div class="timeline-title">AI Research Assistant</div>
+                    <div class="timeline-company">DYNAMO Lab, UC Santa Barbara</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">Sep 2023 - Jun 2024</div>
+                    <div class="timeline-title">Security and Program Analysis Researcher</div>
+                    <div class="timeline-company">Computer Verification Lab, UC Santa Barbara</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">Jun 2023 - Sep 2023</div>
+                    <div class="timeline-title">Software Engineer Intern</div>
+                    <div class="timeline-company">Makonis</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="skills">
+        <div class="container">
+            <h3 class="section-title">Technical Skills</h3>
+            <div class="skills-container">
+                <div class="skill-section">
+                    <h4>Programming Languages</h4>
+                    <div class="skills-grid">
+                        <div class="skill-item" data-tech="python">
+                            <div class="skill-icon">
+                                <img src="python-icon.svg" alt="Python">
+                            </div>
+                            <span class="skill-name">Python</span>
+                        </div>
+                        <div class="skill-item" data-tech="javascript">
+                            <div class="skill-icon">
+                                <img src="javascript-icon.svg" alt="JavaScript">
+                            </div>
+                            <span class="skill-name">JavaScript</span>
+                        </div>
+                        <div class="skill-item" data-tech="typescript">
+                            <div class="skill-icon">
+                                <img src="typescript-icon.svg" alt="TypeScript">
+                            </div>
+                            <span class="skill-name">TypeScript</span>
+                        </div>
+                        <div class="skill-item" data-tech="java">
+                            <div class="skill-icon">
+                                <img src="java-icon.svg" alt="Java">
+                            </div>
+                            <span class="skill-name">Java</span>
+                        </div>
+                        <div class="skill-item" data-tech="swift">
+                            <div class="skill-icon">
+                                <img src="swift-icon.svg" alt="Swift">
+                            </div>
+                            <span class="skill-name">Swift</span>
+                        </div>
+                        <div class="skill-item" data-tech="cpp">
+                            <div class="skill-icon">
+                                <img src="cpp-icon.svg" alt="C++">
+                            </div>
+                            <span class="skill-name">C/C++</span>
+                        </div>
+                        <div class="skill-item" data-tech="sql">
+                            <div class="skill-icon">
+                                <img src="sql-icon.svg" alt="SQL">
+                            </div>
+                            <span class="skill-name">SQL</span>
+                        </div>
+                        <div class="skill-item" data-tech="html">
+                            <div class="skill-icon">
+                                <img src="html-icon.svg" alt="HTML/CSS">
+                            </div>
+                            <span class="skill-name">HTML/CSS</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="skill-section">
+                    <h4>Technologies</h4>
+                    <div class="skills-grid">
+                        <div class="skill-item" data-tech="react">
+                            <div class="skill-icon">
+                                <img src="react-icon.svg" alt="React">
+                            </div>
+                            <span class="skill-name">React</span>
+                        </div>
+                        <div class="skill-item" data-tech="nextjs">
+                            <div class="skill-icon">
+                                <img src="next-icon.svg" alt="Next.js">
+                            </div>
+                            <span class="skill-name">Next.js</span>
+                        </div>
+                        <div class="skill-item" data-tech="node">
+                            <div class="skill-icon">
+                                <img src="nodejs-icon.svg" alt="Node.js">
+                            </div>
+                            <span class="skill-name">Node.js</span>
+                        </div>
+                        <div class="skill-item" data-tech="tailwind">
+                            <div class="skill-icon">
+                                <img src="tailwind-icon.svg" alt="Tailwind CSS">
+                            </div>
+                            <span class="skill-name">Tailwind CSS</span>
+                        </div>
+                        <div class="skill-item" data-tech="aws">
+                            <div class="skill-icon">
+                                <img src="aws-icon.svg" alt="AWS">
+                            </div>
+                            <span class="skill-name">AWS</span>
+                        </div>
+                        <div class="skill-item" data-tech="docker">
+                            <div class="skill-icon">
+                                <img src="docker-icon.svg" alt="Docker">
+                            </div>
+                            <span class="skill-name">Docker</span>
+                        </div>
+                        <div class="skill-item" data-tech="kubernetes">
+                            <div class="skill-icon">
+                                <img src="kubernetes-icon.svg" alt="Kubernetes">
+                            </div>
+                            <span class="skill-name">Kubernetes</span>
+                        </div>
+                        <div class="skill-item" data-tech="graphql">
+                            <div class="skill-icon">
+                                <img src="graphql-icon.svg" alt="GraphQL">
+                            </div>
+                            <span class="skill-name">GraphQL</span>
+                        </div>
+                        <div class="skill-item" data-tech="firebase">
+                            <div class="skill-icon">
+                                <img src="firebase-icon.svg" alt="Firebase">
+                            </div>
+                            <span class="skill-name">Firebase</span>
+                        </div>
+                        <div class="skill-item" data-tech="redis">
+                            <div class="skill-icon">
+                                <img src="redis-icon.svg" alt="Redis">
+                            </div>
+                            <span class="skill-name">Redis</span>
+                        </div>
+                        <div class="skill-item" data-tech="tensorflow">
+                            <div class="skill-icon">
+                                <img src="tensorflow-icon.svg" alt="TensorFlow">
+                            </div>
+                            <span class="skill-name">TensorFlow</span>
+                        </div>
+                        <div class="skill-item" data-tech="pytorch">
+                            <div class="skill-icon">
+                                <img src="pytorch-icon.svg" alt="PyTorch">
+                            </div>
+                            <span class="skill-name">PyTorch</span>
+                        </div>
+                        <div class="skill-item" data-tech="mongodb">
+                            <div class="skill-icon">
+                                <img src="mongodb-icon.svg" alt="MongoDB">
+                            </div>
+                            <span class="skill-name">MongoDB</span>
+                        </div>
+                        <div class="skill-item" data-tech="mysql">
+                            <div class="skill-icon">
+                                <img src="mysql-icon.svg" alt="MySQL">
+                            </div>
+                            <span class="skill-name">MySQL</span>
+                        </div>
+                        <div class="skill-item" data-tech="git">
+                            <div class="skill-icon">
+                                <img src="git-icon.svg" alt="Git">
+                            </div>
+                            <span class="skill-name">Git</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <h3 class="section-title">Featured Projects</h3>
+            <div class="project-grid">
+                <div class="project-card">
+                    <div class="project-content">
+                        <h4 class="project-title">Kindness Kart</h4>
+                        <p class="project-description">
+                            Engineered a platform for 7 hotels and 2 NGOs. Developed native iOS/Android apps and a website with a backend on MongoDB, cutting logistics time by over 50%.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">React</span>
+                            <span class="tech-tag">Node.js</span>
+                            <span class="tech-tag">AWS</span>
+                            <span class="tech-tag">SQL</span>
+                            <span class="tech-tag">MongoDB</span>
+                            <span class="tech-tag">Swift</span>
+                            <span class="tech-tag">Java</span>
+                            <span class="tech-tag">Git</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/SuhritP/SBHacks" class="project-btn secondary" target="_blank">View Code</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-content">
+                        <h4 class="project-title">SWE-bench Agent</h4>
+                        <p class="project-description">
+                            Developed an AI agent using GPT-4o to autonomously generate code patches for software engineering problems. Achieved a 12.7% pass rate on the SWE-bench harness, establishing a baseline for model and prompt refinement.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">OpenAI API</span>
+                            <span class="tech-tag">GPT-4o-mini</span>
+                            <span class="tech-tag">Docker</span>
+                            <span class="tech-tag">Git</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/SuhritP/SWE-bench" class="project-btn secondary" target="_blank">View Code</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-content">
+                        <h4 class="project-title">GCAL</h4>
+                        <p class="project-description">
+                            AI-powered web app that extracts event information from images and automatically adds them to Google Calendar. Uses OpenAI GPT-4o Vision API to intelligently read schedules from uploaded images, then creates calendar events via Google Calendar API. Deployed on Vercel with secure serverless backend and privacy-focused design.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">React</span>
+                            <span class="tech-tag">Next.js</span>
+                            <span class="tech-tag">OpenAI API</span>
+                            <span class="tech-tag">Google Calendar API</span>
+                            <span class="tech-tag">Vercel</span>
+                            <span class="tech-tag">TypeScript</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/SuhritP/CalApp" class="project-btn secondary" target="_blank">View Code</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chess Section -->
+    <section id="chess" class="chess">
+        <div class="container">
+            <h3 class="section-title">Play against me!</h3>
+            <p style="text-align: center; margin-bottom: 2rem; color: var(--text-secondary);">
+                Challenge yourself to a game of chess! Powered by professional-grade analysis.
+            </p>
+            <div class="chess-container">
+                <div class="chess-game-wrapper">
+                    <div id="game-status" class="game-status">White's Turn</div>
+                    
+                    <!-- Mobile instructions -->
+                    <div id="mobile-instructions" class="mobile-instructions" style="display: none;">
+                        📱 <strong>Mobile:</strong> Tap a piece to select it, then tap the destination square to move.
+                    </div>
+
+                    <div id="black-captured" class="captured-pieces-container"></div>
+                    <div class="board-wrapper">
+                        <div id="chessBoard"></div>
+                    </div>
+                    <div id="white-captured" class="captured-pieces-container"></div>
+
+                    <div class="chess-buttons">
+                        <button id="restart-button" class="chess-btn">
+                            New Game
+                        </button>
+                        <button id="show-pgn" class="chess-btn secondary" style="display: none;">
+                            Show Game Notation
+                        </button>
+                    </div>
+                    
+                    <div id="pgn-container" class="pgn-container" style="display: none;">
+                        <h4>Game PGN (Portable Game Notation)</h4>
+                        <textarea id="pgn-output" readonly></textarea>
+                        <div class="chess-buttons">
+                            <button id="download-pgn" class="chess-btn">Download PGN</button>
+                            <button id="hide-pgn" class="chess-btn secondary">Hide</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h3 class="section-title">Get In Touch</h3>
+            <div class="contact-content">
+                <p class="contact-text">
+                    I'm always open to discussing new opportunities, interesting projects, or potential collaborations. Whether you have a question about my work or want to connect, feel free to reach out!
+                </p>
+                <a href="mailto:suhrit@ucsb.edu" class="contact-btn">Say Hello</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p>Designed & Built by Suhrit Padakanti</p>
+                <div class="footer-social">
+                    <a href="https://linkedin.com/in/suhrit-padakanti" target="_blank" title="LinkedIn">
+                        <img src="linkedin-icon.svg" alt="LinkedIn">
+                    </a>
+                    <a href="https://github.com/SuhritP" target="_blank" title="GitHub">
+                        <img src="github-icon.svg" alt="GitHub">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Dark Mode Toggle Functionality
+        function initializeDarkMode() {
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            const body = document.body;
+            
+            // Check for saved user preference or default to light mode
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme) {
+                body.setAttribute('data-theme', savedTheme);
+                updateDarkModeButton(savedTheme);
+            } else if (prefersDarkMode) {
+                body.setAttribute('data-theme', 'dark');
+                updateDarkModeButton('dark');
+            } else {
+                body.setAttribute('data-theme', 'light');
+                updateDarkModeButton('light');
+            }
+            
+            darkModeToggle.addEventListener('click', function() {
+                const currentTheme = body.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateDarkModeButton(newTheme);
+                
+                // Update neural network colors for dark mode
+                updateNeuralNetworkColors();
+            });
+        }
+        
+        function updateDarkModeButton(theme) {
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            darkModeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+            darkModeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+        }
+        
+        function updateNeuralNetworkColors() {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            
+            if (isDark) {
+                neuralConfig.neuron.color = 'rgba(79, 195, 247, 0.6)';
+                neuralConfig.neuron.glow = 'rgba(79, 195, 247, 0.3)';
+                neuralConfig.neuron.fireColor = '#ffffff';
+                neuralConfig.neuron.fireGlow = '#4fc3f7';
+                neuralConfig.line.color = 'rgba(79, 195, 247, 0.2)';
+                neuralConfig.pulse.color = '#4fc3f7';
+            } else {
+                neuralConfig.neuron.color = 'rgba(100, 180, 255, 0.6)';
+                neuralConfig.neuron.glow = 'rgba(100, 180, 255, 0.2)';
+                neuralConfig.neuron.fireColor = '#ffffff';
+                neuralConfig.neuron.fireGlow = '#99ccff';
+                neuralConfig.line.color = 'rgba(100, 180, 255, 0.15)';
+                neuralConfig.pulse.color = '#ccddff';
+            }
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add active class to navigation items on scroll
+        window.addEventListener('scroll', () => {
+            let current = '';
+            const sections = document.querySelectorAll('section');
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Neural Network Animation
+        const canvas = document.getElementById('neuralNetworkCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // --- Configuration ---
+        const neuralConfig = {
+            neuron: {
+                radius: 4, // Slightly smaller base radius
+                color: 'rgba(100, 180, 255, 0.6)',
+                glow: 'rgba(100, 180, 255, 0.2)',
+                fireColor: '#ffffff',
+                fireGlow: '#99ccff'
+            },
+            line: {
+                color: 'rgba(100, 180, 255, 0.15)', // More subtle lines
+                width: 0.5
+            },
+            pulse: {
+                radius: 2.5,
+                color: '#ccddff',
+                speed: 0.025
+            },
+            mouse: {
+                radius: 150 // The radius around the mouse to interact with neurons
+            },
+            layers: window.innerWidth < 768 ? [4, 5, 4, 3] : [6, 7, 7, 5, 4] // Fewer neurons on mobile
+        };
+
+        let neurons = [];
+        let pulses = [];
+        const mouse = {
+            x: undefined,
+            y: undefined
+        };
+
+        // --- Event Listeners ---
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = event.x;
+            mouse.y = event.y;
+        });
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            // Update layer configuration based on screen size
+            neuralConfig.layers = window.innerWidth < 768 ? [4, 5, 4, 3] : [6, 7, 7, 5, 4];
+            neurons = [];
+            initializeNetwork();
+        });
+
+        class Neuron {
+            constructor(x, y) {
+                this.baseX = x;
+                this.baseY = y;
+                this.x = x;
+                this.y = y;
+                this.activation = 0; // 0 = resting, 1 = firing
+                this.jiggleFactor = Math.random() * 0.02 + 0.005; // How much it moves
+            }
+
+            // New method to make the neuron jiggle
+            jiggle() {
+                // Using sine waves for smooth, organic movement
+                this.x = this.baseX + Math.sin(Date.now() * this.jiggleFactor) * 5;
+                this.y = this.baseY + Math.cos(Date.now() * this.jiggleFactor) * 5;
+            }
+
+            // New method to trigger the firing animation
+            fire() {
+                this.activation = 1;
+            }
+
+            update() {
+                this.jiggle();
+                // Decay the activation over time
+                if (this.activation > 0) {
+                    this.activation -= 0.05;
+                } else {
+                    this.activation = 0;
+                }
+            }
+
+            draw() {
+                let radius = neuralConfig.neuron.radius;
+                let color = neuralConfig.neuron.color;
+                let glow = neuralConfig.neuron.glow;
+
+                const distanceToMouse = Math.sqrt((this.x - mouse.x) ** 2 + (this.y - mouse.y) ** 2);
+                
+                // --- Mouse Interaction ---
+                if (distanceToMouse < neuralConfig.mouse.radius) {
+                    const proximity = 1 - (distanceToMouse / neuralConfig.mouse.radius);
+                    radius += proximity * 4; // Enlarge neuron when mouse is near
+                    glow = neuralConfig.neuron.fireGlow;
+                }
+                
+                // --- Firing Animation ---
+                if (this.activation > 0) {
+                    radius += this.activation * 5;
+                    color = `rgba(255, 255, 255, ${this.activation})`;
+                    glow = `rgba(153, 204, 255, ${this.activation * 0.5})`;
+                }
+                
+                // Draw the glow
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = glow;
+                
+                // Draw the neuron
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, radius, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.fill();
+
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        class Pulse {
+            constructor(startNeuron, endNeuron) {
+                this.start = startNeuron;
+                this.end = endNeuron;
+                this.progress = 0;
+            }
+
+            update() {
+                this.progress += neuralConfig.pulse.speed;
+            }
+
+            draw() {
+                const x = this.start.x + (this.end.x - this.start.x) * this.progress;
+                const y = this.start.y + (this.end.y - this.start.y) * this.progress;
+
+                ctx.beginPath();
+                ctx.arc(x, y, neuralConfig.pulse.radius, 0, Math.PI * 2);
+                ctx.fillStyle = neuralConfig.pulse.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = neuralConfig.pulse.color;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        function initializeNetwork() {
+            const layerSpacing = canvas.width / (neuralConfig.layers.length + 1);
+
+            neuralConfig.layers.forEach((neuronCount, layerIndex) => {
+                const layerNeurons = [];
+                const x = layerSpacing * (layerIndex + 1);
+                const ySpacing = canvas.height / (neuronCount + 1);
+
+                for (let i = 0; i < neuronCount; i++) {
+                    const y = ySpacing * (i + 1);
+                    layerNeurons.push(new Neuron(x, y));
+                }
+                neurons.push(layerNeurons);
+            });
+        }
+
+        function triggerPulseFrom(startNeuron, startLayerIndex) {
+            if (startLayerIndex >= neurons.length - 1) return;
+
+            const endLayerIndex = startLayerIndex + 1;
+            const endNeuronIndex = Math.floor(Math.random() * neurons[endLayerIndex].length);
+            const endNeuron = neurons[endLayerIndex][endNeuronIndex];
+
+            pulses.push(new Pulse(startNeuron, endNeuron));
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // --- Draw lines ---
+            ctx.strokeStyle = neuralConfig.line.color;
+            ctx.lineWidth = neuralConfig.line.width;
+            for (let i = 0; i < neurons.length - 1; i++) {
+                for (const startNeuron of neurons[i]) {
+                    for (const endNeuron of neurons[i + 1]) {
+                        const distanceToMouse = Math.sqrt((startNeuron.x - mouse.x) ** 2 + (startNeuron.y - mouse.y) ** 2);
+                        let opacity = 1;
+                        if (distanceToMouse < neuralConfig.mouse.radius) {
+                            opacity = Math.max(1 - (distanceToMouse / neuralConfig.mouse.radius), 0.2);
+                        }
+                        
+                        ctx.strokeStyle = `rgba(100, 180, 255, ${0.15 * opacity})`;
+                        ctx.beginPath();
+                        ctx.moveTo(startNeuron.x, startNeuron.y);
+                        ctx.lineTo(endNeuron.x, endNeuron.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // --- Update and draw neurons ---
+            for (const layer of neurons) {
+                for (const neuron of layer) {
+                    neuron.update();
+                    neuron.draw();
+                }
+            }
+            
+            // --- Update and draw pulses ---
+            for (let i = pulses.length - 1; i >= 0; i--) {
+                const pulse = pulses[i];
+                pulse.update();
+                pulse.draw();
+
+                if (pulse.progress >= 1) {
+                    // --- Trigger chain reaction ---
+                    pulse.end.fire(); // Make the destination neuron fire
+                    const endLayerIndex = neurons.findIndex(layer => layer.includes(pulse.end));
+                    // Trigger 1-2 new pulses from the neuron that was just hit
+                    for(let k = 0; k < Math.random() * 2; k++) {
+                        triggerPulseFrom(pulse.end, endLayerIndex);
+                    }
+                    pulses.splice(i, 1);
+                }
+            }
+
+            // Randomly trigger new "background" pulses from the first layer
+            if (Math.random() < 0.04) {
+                const startLayerIndex = 0;
+                const startNeuronIndex = Math.floor(Math.random() * neurons[startLayerIndex].length);
+                const startNeuron = neurons[startLayerIndex][startNeuronIndex];
+                triggerPulseFrom(startNeuron, startLayerIndex);
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // --- Start Neural Network Animation ---
+        initializeNetwork();
+        updateNeuralNetworkColors(); // Set initial colors based on theme
+        animate();
+
+        // Chess Game Logic
+        $(document).ready(function() {
+            // --- Global Variables ---
+            let board = null;
+            let game = new Chess();
+            const whiteCapturedContainer = $('#white-captured');
+            const blackCapturedContainer = $('#black-captured');
+            const statusEl = $('#game-status');
+            const pgnContainer = $('#pgn-container');
+            const pgnOutput = $('#pgn-output');
+
+
+            // --- Chess Engine ---
+            let engineThinking = false;
+
+            // Get best move from Stockfish API
+            async function getEngineMove(fen) {
+                try {
+                    const response = await fetch(`https://stockfish.online/api/s/v2.php?fen=${encodeURIComponent(fen)}&depth=15`);
+                    const data = await response.json();
+                    
+                    if (data.success && data.bestmove) {
+                        // Extract move from "bestmove e2e4 ponder ..." format
+                        const moveMatch = data.bestmove.match(/bestmove\s+([a-h][1-8][a-h][1-8][qrbn]?)/);
+                        if (moveMatch) {
+                            return moveMatch[1];
+                        }
+                    }
+                    return null;
+                } catch (error) {
+                    console.error('Engine API error:', error);
+                    return null;
+                }
+            }
+
+            // --- Piece Theme ---
+            const pieceTheme = (piece) => `https://chessboardjs.com/img/chesspieces/wikipedia/${piece}.png`;
+
+            // --- Bot Logic ---
+            async function makeBotMove() {
+                if (game.game_over() || engineThinking) return;
+
+                engineThinking = true;
+                
+                try {
+                    // Get current position FEN
+                    const currentFen = game.fen();
+                    console.log('Getting move for position:', currentFen);
+                    
+                    // Get best move from Stockfish API
+                    const bestMove = await getEngineMove(currentFen);
+                    
+                    if (bestMove) {
+                        console.log('Engine suggests:', bestMove);
+                        
+                        // Make the move
+                        const engineMove = game.move(bestMove);
+                        if (engineMove) {
+                            board.position(game.fen());
+                            updateStatus();
+                        } else {
+                            console.error('Invalid move from engine:', bestMove);
+                            // Fallback to random move
+                            makeRandomMove();
+                        }
+                    } else {
+                        console.log('No move from engine, using random move');
+                        makeRandomMove();
+                    }
+                } catch (error) {
+                    console.error('Error getting engine move:', error);
+                    makeRandomMove();
+                } finally {
+                    engineThinking = false;
+                }
+            }
+
+            // Fallback random move function
+            function makeRandomMove() {
+                const moves = game.moves();
+                if (moves.length > 0) {
+                    const randomMove = moves[Math.floor(Math.random() * moves.length)];
+                    game.move(randomMove);
+                    board.position(game.fen());
+                    updateStatus();
+                }
+            }
+
+            // --- Board Event Handlers ---
+            function onDragStart(source, piece) {
+                return !game.game_over() && game.turn() === 'w' && piece.search(/^w/) !== -1;
+            }
+
+            function onDrop(source, target) {
+                const move = game.move({ from: source, to: target, promotion: 'q' });
+                if (move === null) return 'snapback';
+                updateStatus();
+                window.setTimeout(makeBotMove, 250);
+            }
+
+            function onSnapEnd() {
+                board.position(game.fen());
+            }
+
+            // --- Game Status & UI Update ---
+            function updateStatus() {
+                let status = '';
+                const capturedPieces = game.history({ verbose: true }).reduce((acc, move) => {
+                    if ('captured' in move) {
+                         const color = move.color === 'w' ? 'b' : 'w';
+                         acc[color].push(move.captured);
+                    }
+                    return acc;
+                }, { w: [], b: [] });
+                
+                whiteCapturedContainer.empty();
+                capturedPieces.w.forEach(p => whiteCapturedContainer.append(`<img src="${pieceTheme('w' + p.toUpperCase())}" alt="${p}">`));
+                blackCapturedContainer.empty();
+                capturedPieces.b.forEach(p => blackCapturedContainer.append(`<img src="${pieceTheme('b' + p.toUpperCase())}" alt="${p}">`));
+
+                const moveColor = game.turn() === 'b' ? 'Black' : 'White';
+                if (game.in_checkmate()) {
+                    status = `Game over, ${moveColor} is in checkmate.`;
+                    $('#show-pgn').show();
+                } else if (game.in_draw()) {
+                    status = 'Game over, drawn position.';
+                    $('#show-pgn').show();
+                } else {
+                    status = `${moveColor}'s turn`;
+                    if (game.in_check()) status += `, ${moveColor} is in check.`;
+                    $('#show-pgn').hide();
+                }
+                statusEl.html(status);
+
+                // Always update PGN output, even during the game
+                pgnOutput.val(game.pgn());
+                
+                // Debug: Log PGN to console
+                console.log('Current PGN:', game.pgn());
+            }
+
+            // --- Board Configuration ---
+            const config = {
+                draggable: true,
+                position: 'start',
+                onDragStart: onDragStart,
+                onDrop: onDrop,
+                onSnapEnd: onSnapEnd,
+                pieceTheme: pieceTheme,
+                touchMove: true, // Enable touch support for mobile devices
+                snapbackSpeed: 500,
+                snapSpeed: 100,
+                trashSpeed: 100,
+                sparePieces: false,
+                showNotation: true,
+                moveSpeed: 200
+            };
+
+            // --- Mobile Detection ---
+            let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            // --- Initialization ---
+            board = Chessboard('chessBoard', config);
+            updateStatus();
+
+            // Show mobile instructions if on mobile device
+            if (isMobile) {
+                document.getElementById('mobile-instructions').style.display = 'block';
+            }
+
+            // --- Additional Mobile Touch Support ---
+            // Add custom touch event handlers for better mobile experience
+            let selectedSquare = null;
+            
+            // Alternative tap-to-move system for mobile
+            function onSquareClick(square) {
+                // Only use tap-to-move on mobile devices
+                if (!isMobile) return;
+                
+                if (selectedSquare === null) {
+                    // First tap - select piece
+                    const piece = board.position()[square];
+                    if (piece && piece.charAt(0) === 'w' && game.turn() === 'w' && !game.game_over()) {
+                        selectedSquare = square;
+                        $('#chessBoard .square-' + square).addClass('highlight-white');
+                        statusEl.html('Piece selected. Tap destination square.');
+                    }
+                } else {
+                    // Second tap - move piece
+                    const move = game.move({ from: selectedSquare, to: square, promotion: 'q' });
+                    if (move === null) {
+                        // Invalid move - clear selection
+                        $('#chessBoard .square-55d63').removeClass('highlight-white');
+                        selectedSquare = null;
+                        updateStatus();
+                    } else {
+                        // Valid move - update board and clear selection
+                        board.position(game.fen());
+                        $('#chessBoard .square-55d63').removeClass('highlight-white');
+                        selectedSquare = null;
+                        updateStatus();
+                        window.setTimeout(makeBotMove, 250);
+                    }
+                }
+            }
+
+            setTimeout(() => {
+                const boardElement = document.getElementById('chessBoard');
+                if (boardElement) {
+                    // Prevent default touch behaviors that might interfere
+                    boardElement.addEventListener('touchstart', function(e) {
+                        e.stopPropagation();
+                    }, { passive: false });
+                    
+                    boardElement.addEventListener('touchmove', function(e) {
+                        e.stopPropagation();
+                    }, { passive: false });
+                    
+                    boardElement.addEventListener('touchend', function(e) {
+                        e.stopPropagation();
+                    }, { passive: false });
+
+                    // Force enable drag and drop for mobile
+                    const pieces = boardElement.querySelectorAll('img');
+                    pieces.forEach(piece => {
+                        piece.style.touchAction = 'none';
+                        piece.style.webkitUserDrag = 'element';
+                        piece.draggable = true;
+                    });
+
+                    // Add click handlers for tap-to-move on mobile
+                    if (isMobile) {
+                        const squares = boardElement.querySelectorAll('.square-55d63');
+                        squares.forEach(square => {
+                            square.addEventListener('click', function() {
+                                const squareId = this.getAttribute('data-square') || 
+                                               this.className.match(/square-([a-h][1-8])/)?.[1];
+                                if (squareId) {
+                                    onSquareClick(squareId);
+                                }
+                            });
+                        });
+                    }
+                }
+            }, 1000);
+
+            // --- Event Handlers ---
+            $('#restart-button').on('click', () => {
+                game.reset();
+                board.position('start');
+                updateStatus();
+                pgnContainer.hide();
+                // Clear captured pieces displays
+                whiteCapturedContainer.empty();
+                blackCapturedContainer.empty();
+                // Reset engine state
+                engineThinking = false;
+            });
+
+            $('#show-pgn').on('click', () => {
+                console.log('Show PGN button clicked');
+                pgnContainer.show();
+            });
+
+            $('#hide-pgn').on('click', () => {
+                pgnContainer.hide();
+            });
+
+            $('#download-pgn').on('click', () => {
+                const pgnData = game.pgn();
+                const blob = new Blob([pgnData], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `chess-game-${Date.now()}.pgn`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        });
+
+        // Mobile Navigation Toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileToggle = document.getElementById('mobile-menu-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+
+            mobileToggle.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+            });
+
+            // Close mobile menu when clicking on navigation links (but not dark mode toggle)
+            const navLinks = navMenu.querySelectorAll('a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    navMenu.classList.remove('active');
+                });
+            });
+
+            // Close mobile menu when clicking outside (but not on dark mode toggle)
+            document.addEventListener('click', function(event) {
+                if (!navMenu.contains(event.target) && 
+                    !mobileToggle.contains(event.target) && 
+                    !darkModeToggle.contains(event.target)) {
+                    navMenu.classList.remove('active');
+                }
+            });
+
+            // Close mobile menu when scrolling
+            let isScrolling = false;
+            window.addEventListener('scroll', function() {
+                if (!isScrolling) {
+                    window.requestAnimationFrame(function() {
+                        navMenu.classList.remove('active');
+                        isScrolling = false;
+                    });
+                    isScrolling = true;
+                }
+            });
+
+            // Initialize dark mode
+            initializeDarkMode();
+        });
+    </script>
+</body>
+</html> 
